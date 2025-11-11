@@ -2,7 +2,7 @@
 
 how to run 
 
-Frontend Setup (Vue)
+Frontend Setup (React)
 
 Open another terminal and go to the frontend folder:
 
