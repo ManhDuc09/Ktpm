@@ -20,6 +20,9 @@ public class UserService {
     }
 
     public User register(UserDTO dto) {
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new IllegalArgumentException("Email already exists");
+        }
         User user = new User();
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());

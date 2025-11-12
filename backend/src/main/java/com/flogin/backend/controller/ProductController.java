@@ -30,7 +30,8 @@ public class ProductController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<List<Product>> getProducts(@PathVariable Long userId) {
-        User user = userService.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId)); 
+        User user = userService.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
         return ResponseEntity.ok(productService.getProductsByUser(user));
     }
 }

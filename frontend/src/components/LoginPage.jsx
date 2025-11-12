@@ -1,22 +1,75 @@
 import React, { useState } from "react";
 import "./Login.css"; // import your CSS
-
+import { register } from "../services/authService";
 function LoginPage() {
     const [rightPanelActive, setRightPanelActive] = useState(false);
+    const [registerData, setRegisterData] = useState({
+        name: "",
+        email: "",
+        password: "",
+    });
 
+    const handleChange = (e) => {
+        setRegisterData({ ...registerData, [e.target.name]: e.target.value });
+    };
+
+    const handleRegister = async (e) => {
+        e.preventDefault();
+        if (!registerData.name || !registerData.email || !registerData.password) {
+            alert("All fields are required!");
+            return;
+        }
+
+        if (!registerData.email.includes("@")) {
+            alert("Please enter a valid email!");
+            return;
+        }
+
+        if (registerData.password.length < 6) {
+            alert("Password must be at least 6 characters!");
+            return;
+        }
+        try {
+            const response = await register(registerData);
+            console.log("User registered:", response.data);
+            alert("Registration successful!");
+            setRightPanelActive(false);
+        } catch (err) {
+            if (err.response) {
+
+                if (err.response.status === 409) {
+                    alert("Registration failed: " + err.response.data);
+                } else {
+                    alert("Registration failed: " + err.response.data || "Unknown error");
+                }
+            } else {
+                alert("Registration failed: Network error");
+            }
+        }
+    };
     const handleSignUp = () => setRightPanelActive(true);
     const handleSignIn = () => setRightPanelActive(false);
 
     return (
         <div className={`container ${rightPanelActive ? "right-panel-active" : ""}`}>
             <div className="form-container sign-up-container">
-                <form>
+                <form onSubmit={handleRegister}>
                     <h1>Create Account</h1>
 
-                    <input type="text" placeholder="Name" />
-                    <input type="email" placeholder="Email" />
-                    <input type="password" placeholder="Password" />
-                    <button>Sign Up</button>
+                    <input type="text"
+                        name="name"
+                        placeholder="Name"
+                        value={registerData.name}
+                        onChange={handleChange} />
+                    <input type="email" placeholder="Email"
+                        name="email"
+                        value={registerData.email}
+                        onChange={handleChange} />
+                    <input type="password" placeholder="Password"
+                        name="password"
+                        value={registerData.password}
+                        onChange={handleChange} />
+                    <button type="submit">Sign Up</button>
                 </form>
             </div>
 
