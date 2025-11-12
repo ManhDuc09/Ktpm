@@ -14,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
+
     private final ProductService productService;
     private final UserService userService;
 
@@ -22,16 +23,32 @@ public class ProductController {
         this.userService = userService;
     }
 
+    // CREATE a new product for a user
     @PostMapping("/{userId}")
     public ResponseEntity<Product> createProduct(@PathVariable Long userId, @RequestBody ProductDTO dto) {
-        User user = userService.findByEmail("email@example.com").orElseThrow(); // simplify auth
-        return ResponseEntity.ok(productService.createProduct(dto, user));
+        User user = userService.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
+        Product product = productService.createProduct(dto, user);
+        return ResponseEntity.ok(product);
     }
 
     @GetMapping("/{userId}")
     public ResponseEntity<List<Product>> getProducts(@PathVariable Long userId) {
         User user = userService.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
-        return ResponseEntity.ok(productService.getProductsByUser(user));
+        List<Product> products = productService.getProductsByUser(user);
+        return ResponseEntity.ok(products);
+    }
+
+    @PutMapping("/{productId}")
+    public ResponseEntity<Product> updateProduct(@PathVariable Long productId, @RequestBody ProductDTO dto) {
+        Product updatedProduct = productService.updateProduct(productId, dto);
+        return ResponseEntity.ok(updatedProduct);
+    }
+
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<String> deleteProduct(@PathVariable Long productId) {
+        productService.deleteProduct(productId);
+        return ResponseEntity.ok("Product deleted successfully");
     }
 }

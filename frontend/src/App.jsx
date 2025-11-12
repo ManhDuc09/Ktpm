@@ -1,17 +1,24 @@
 import './App.css';
 import LoginPage from './components/LoginPage';
-import UserPage from './components/UserPage'; // your user page
+import UserPage from './components/UserPage';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import RedirectIfLoggedIn from './components/RedirectIfLoggedIn';
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Default login page */}
-        <Route path="/" element={<LoginPage />} />
-
-        {/* Example user page */}
-        <Route path="/users/:id" element={<UserPage />} />
+        <Route
+          path="/*"
+          element={
+            <RedirectIfLoggedIn>
+              <Routes>
+                <Route path="/" element={<LoginPage />} />
+                <Route path="/users/:id" element={<UserPage />} />
+              </Routes>
+            </RedirectIfLoggedIn>
+          }
+        />
       </Routes>
     </Router>
   );

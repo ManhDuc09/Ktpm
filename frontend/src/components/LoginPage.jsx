@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./Login.css"; // import your CSS
-import { register } from "../services/authService";
+import { register, login } from "../services/authService";
 import { useNavigate } from "react-router-dom";
 function LoginPage() {
     const navigate = useNavigate();
@@ -11,10 +11,48 @@ function LoginPage() {
         password: "",
     });
 
+    const [loginData, setLoginData] = useState({
+        email: "",
+        password: "",
+    });
+
+    const handleLoginChange = (e) => {
+        setLoginData({ ...loginData, [e.target.name]: e.target.value });
+    };
+
     const handleChange = (e) => {
         setRegisterData({ ...registerData, [e.target.name]: e.target.value });
     };
 
+
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+
+        if (!loginData.email || !loginData.password) {
+            alert("Both email and password are required!");
+            return;
+        }
+
+        try {
+            const response = await login(loginData);
+
+            localStorage.setItem("user", JSON.stringify(response.data));
+
+            alert("Login successful!");
+            navigate(`/users/${response.data.id}`);
+        } catch (err) {
+            if (err.response) {
+                if (err.response.status === 401) {
+                    alert("Invalid email or password");
+                } else {
+                    alert("Login failed: " + (err.response.data || "Unknown error"));
+                }
+            } else {
+                alert("Network error");
+            }
+        }
+    };
     const handleRegister = async (e) => {
         e.preventDefault();
         if (!registerData.name || !registerData.email || !registerData.password) {
@@ -82,13 +120,25 @@ function LoginPage() {
                 </div>
 
                 <div className={`form-container sign-in-container ${rightPanelActive ? "shift" : ""}`}>
-                    <form>
+                    <form onSubmit={handleLogin}>
                         <h1>Sign in</h1>
 
 
-                        <input type="email" placeholder="Email" />
-                        <input type="password" placeholder="Password" />
-                        <button>Sign In</button>
+                        <input
+                            type="email"
+                            name="email"
+                            value={loginData.email}
+                            onChange={handleLoginChange}
+                            placeholder="Email"
+                        />
+                        <input
+                            type="password"
+                            name="password"
+                            value={loginData.password}
+                            onChange={handleLoginChange}
+                            placeholder="Password"
+                        />
+                        <button type="submit">Sign In</button>
                     </form>
                 </div>
 

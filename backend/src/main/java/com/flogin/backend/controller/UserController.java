@@ -2,7 +2,7 @@ package com.flogin.backend.controller;
 
 import com.flogin.backend.dto.UserDTO;
 import com.flogin.backend.dto.UserResponse;
-
+import com.flogin.backend.entity.User;
 import com.flogin.backend.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +22,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody UserDTO dto) {
+    public ResponseEntity<User> login(@RequestBody UserDTO dto) {
         return userService.login(dto.getEmail(), dto.getPassword())
-                .map(user -> ResponseEntity.ok("Login successful for user: " + user.getName()))
-                .orElseGet(() -> ResponseEntity.status(401).body("Invalid email or password"));
+                .map(user -> ResponseEntity.ok(user))
+                .orElseGet(() -> ResponseEntity.status(401).build());
     }
 }

@@ -1,81 +1,138 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 import "./UserPage.css";
 
 const UserPage = () => {
-    const [users, setUsers] = useState([
-        { id: 1, name: "John Doe", email: "john@example.com", role: "Admin" },
-        { id: 2, name: "Jane Smith", email: "jane@example.com", role: "User" },
-    ]);
-
-    const [modalData, setModalData] = useState({ id: null, name: "", email: "", role: "" });
+    const { id } = useParams(); // user id from URL
+    const [products, setProducts] = useState([]);
+    const [modalData, setModalData] = useState({ id: null, title: "", description: "", quantity: 0 });
     const [isEdit, setIsEdit] = useState(false);
     const [showModal, setShowModal] = useState(false);
 
+    // Fetch products for this user
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/products/${id}`);
+                setProducts(response.data);
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            }
+        };
+        if (id) fetchProducts();
+    }, [id]);
+
+    // Open modals
     const openCreateModal = () => {
         setIsEdit(false);
-        setModalData({ id: null, name: "", email: "", role: "" });
+        setModalData({ id: null, title: "", description: "", quantity: 0 });
         setShowModal(true);
     };
 
-    const openEditModal = (user) => {
+    const openEditModal = (product) => {
         setIsEdit(true);
-        setModalData(user);
+        setModalData(product);
         setShowModal(true);
     };
+
+    const closeModal = () => setShowModal(false);
 
     const handleChange = (e) => {
         setModalData({ ...modalData, [e.target.name]: e.target.value });
     };
 
-    const handleSave = () => {
-        if (isEdit) {
-            setUsers(users.map(u => u.id === modalData.id ? modalData : u));
-        } else {
-            setUsers([...users, { ...modalData, id: Date.now() }]);
+    const handleSave = async () => {
+        try {
+            if (isEdit) {
+                // Update product
+                const response = await axios.put(
+                    `http://localhost:8080/api/products/${modalData.id}`,
+                    modalData
+                );
+                setProducts(products.map(p => (p.id === modalData.id ? response.data : p)));
+            } else {
+                // Create new product
+                const response = await axios.post(
+                    `http://localhost:8080/api/products/${id}`,
+                    modalData
+                );
+                setProducts([...products, response.data]);
+            }
+            setShowModal(false);
+        } catch (error) {
+            console.error("Error saving product:", error);
+            alert("Failed to save product.");
         }
-        setShowModal(false);
     };
 
-    const handleDelete = (id) => {
-        if (window.confirm("Are you sure?")) {
-            setUsers(users.filter(u => u.id !== id));
+    // Delete product
+    const handleDelete = async (productId) => {
+        if (!window.confirm("Are you sure?")) return;
+        try {
+            await axios.delete(`http://localhost:8080/api/products/${productId}`);
+            setProducts(products.filter(p => p.id !== productId));
+        } catch (error) {
+            console.error("Error deleting product:", error);
+            alert("Failed to delete product.");
         }
     };
-
-    const closeModal = () => setShowModal(false);
+    const handleLogout = () => {
+        localStorage.removeItem("user");
+        window.location.href = "/";
+    }
 
     return (
         <div className="user-container">
             <header className="d-flex justify-content-between align-items-center mb-4">
-                <h2>User Management</h2>
-                <button className="btn btn-danger">Logout</button>
+                <h2>Product Management</h2>
+                <button className="btn btn-danger" onClick={handleLogout}>Logout</button>
             </header>
 
             <button className="btn btn-primary mb-3" onClick={openCreateModal}>
-                Add User
+                Add Product
             </button>
 
             <table className="table table-striped">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Role</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Quantity</th>
+
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {users.map(u => (
-                        <tr key={u.id}>
-                            <td>{u.name}</td>
-                            <td>{u.email}</td>
-                            <td>{u.role}</td>
-                            <td>
-                                <button className="btn btn-sm btn-warning me-2" onClick={() => openEditModal(u)}>Edit</button>
-                                <button className="btn btn-sm btn-danger" onClick={() => handleDelete(u.id)}>Delete</button>
+                    {products.length > 0 ? (
+                        products.map(p => (
+                            <tr key={p.id}>
+                                <td>{p.title}</td>
+                                <td>{p.description}</td>
+                                <td>{p.quantity}</td>
+                                <td>
+                                    <button
+                                        className="btn btn-sm btn-warning me-2"
+                                        onClick={() => openEditModal(p)}
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        className="btn btn-sm btn-danger"
+                                        onClick={() => handleDelete(p.id)}
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="4" className="text-center">
+                                No items yet.
                             </td>
                         </tr>
-                    ))}
+                    )}
                 </tbody>
             </table>
 
@@ -83,38 +140,34 @@ const UserPage = () => {
             {showModal && (
                 <div className="modal-backdrop">
                     <div className="modal-content p-3">
-                        <h5>{isEdit ? "Edit User" : "Add User"}</h5>
+                        <h5>{isEdit ? "Edit Product" : "Add Product"}</h5>
                         <input
                             type="text"
-                            name="name"
-                            placeholder="Name"
-                            value={modalData.name}
-                            onChange={handleChange}
-                            className="form-control my-2"
-                        />
-                        <input
-                            type="email"
-                            name="email"
-                            placeholder="Email"
-                            value={modalData.email}
+                            name="title"
+                            placeholder="Title"
+                            value={modalData.title}
                             onChange={handleChange}
                             className="form-control my-2"
                         />
                         <input
                             type="text"
-                            name="role"
-                            placeholder="Role"
-                            value={modalData.role}
+                            name="description"
+                            placeholder="Description"
+                            value={modalData.description}
+                            onChange={handleChange}
+                            className="form-control my-2"
+                        />
+                        <input
+                            type="number"
+                            name="quantity"
+                            placeholder="Quantity"
+                            value={modalData.quantity}
                             onChange={handleChange}
                             className="form-control my-2"
                         />
                         <div className="d-flex justify-content-end mt-2">
-                            <button className="btn btn-secondary me-2" onClick={closeModal}>
-                                Cancel
-                            </button>
-                            <button className="btn btn-primary" onClick={handleSave}>
-                                Save
-                            </button>
+                            <button className="btn btn-secondary me-2" onClick={closeModal}>Cancel</button>
+                            <button className="btn btn-primary" onClick={handleSave}>Save</button>
                         </div>
                     </div>
                 </div>
