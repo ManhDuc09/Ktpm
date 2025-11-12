@@ -108,6 +108,8 @@ input {
     transition: all 0.6s ease-in-out;
 }
 
+
+
 .sign-in-container {
     left: 0;
     width: 50%;
@@ -256,4 +258,22 @@ footer i {
 footer a {
     color: #3c97bf;
     text-decoration: none;
+}
+
+.form-container input {
+    background-color: #eee;
+    border: 1px solid #ddd;
+    padding: 12px 15px;
+    margin: 8px 0;
+    width: 100%;
+    color: #333;
+    transition: all 0.3s ease;
+    border-radius: 5px;
+
+}
+
+.form-container input:focus {
+    background-color: #fff;
+    border-color: #4d90fe;
+    outline: none;
 }

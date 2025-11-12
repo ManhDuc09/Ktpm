@@ -1,6 +1,7 @@
 package com.flogin.backend.service;
 
 import com.flogin.backend.dto.UserDTO;
+import com.flogin.backend.dto.UserResponse;
 import com.flogin.backend.entity.User;
 import com.flogin.backend.repository.UserRepository;
 
@@ -19,7 +20,7 @@ public class UserService {
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
-    public User register(UserDTO dto) {
+    public UserResponse register(UserDTO dto) {
         if (userRepository.existsByEmail(dto.getEmail())) {
             throw new IllegalArgumentException("Email already exists");
         }
@@ -27,7 +28,9 @@ public class UserService {
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        return new UserResponse(savedUser.getId(), savedUser.getName(), savedUser.getEmail());
     }
 
     public Optional<User> findById(Long id) {

@@ -1,7 +1,8 @@
 package com.flogin.backend.controller;
 
 import com.flogin.backend.dto.UserDTO;
-import com.flogin.backend.entity.User;
+import com.flogin.backend.dto.UserResponse;
+
 import com.flogin.backend.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody UserDTO dto) {
+    public ResponseEntity<UserResponse> register(@RequestBody UserDTO dto) {
         return ResponseEntity.ok(userService.register(dto));
     }
 
