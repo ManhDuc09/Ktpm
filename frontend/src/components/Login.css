@@ -17,6 +17,11 @@ body,
     background: #f6f5f7;
 }
 
+.error-message {
+    color: red;
+    margin-top: 5px;
+}
+
 .login-page-wrapper .container {
     width: 768px;
     max-width: 100%;

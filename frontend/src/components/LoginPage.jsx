@@ -5,6 +5,9 @@ import { useNavigate } from "react-router-dom";
 function LoginPage() {
     const navigate = useNavigate();
     const [rightPanelActive, setRightPanelActive] = useState(false);
+    const [loginError, setLoginError] = useState("");
+    const [registerError, setRegisterError] = useState("");
+
     const [registerData, setRegisterData] = useState({
         name: "",
         email: "",
@@ -18,10 +21,12 @@ function LoginPage() {
 
     const handleLoginChange = (e) => {
         setLoginData({ ...loginData, [e.target.name]: e.target.value });
+        setLoginError("")
     };
 
     const handleChange = (e) => {
         setRegisterData({ ...registerData, [e.target.name]: e.target.value });
+        setRegisterError("")
     };
 
 
@@ -30,7 +35,7 @@ function LoginPage() {
         e.preventDefault();
 
         if (!loginData.email || !loginData.password) {
-            alert("Both email and password are required!");
+            setLoginError("Both email and password are required!");
             return;
         }
 
@@ -39,57 +44,54 @@ function LoginPage() {
 
             localStorage.setItem("user", JSON.stringify(response.data));
 
-            alert("Login successful!");
             navigate(`/users/${response.data.id}`);
         } catch (err) {
             if (err.response) {
                 if (err.response.status === 401) {
-                    alert("Invalid email or password");
+                    setLoginError("Invalid email or password!");
                 } else {
-                    alert("Login failed: " + (err.response.data || "Unknown error"));
+                    setLoginError("Login failed: " + (err.response.data || "Unknown error"));
                 }
             } else {
-                alert("Network error");
+                setLoginError("Network error");
             }
         }
     };
     const handleRegister = async (e) => {
         e.preventDefault();
         if (!registerData.name || !registerData.email || !registerData.password) {
-            alert("All fields are required!");
+            setRegisterError("All fields are required!");
             return;
         }
 
-        if (!registerData.email.includes("@")) {
-            alert("Please enter a valid email!");
-            return;
-        }
+
 
         if (registerData.password.length < 6) {
-            alert("Password must be at least 6 characters!");
+            setRegisterError("Password must be at least 6 characters!");
             return;
         }
+
         try {
             const response = await register(registerData);
             localStorage.setItem("user", JSON.stringify(response.data));
 
-            alert("Registration successful!");
+            setLoginError("Registration successful!");
             navigate(`/users/${response.data.id}`);
             console.log("User registered:", response.data);
 
             setRightPanelActive(false);
         } catch (err) {
             if (err.response) {
-
                 if (err.response.status === 409) {
-                    alert("Registration failed: " + err.response.data);
+                    setRegisterError("Registration failed: " + err.response.data);
                 } else {
-                    alert("Registration failed: " + err.response.data || "Unknown error");
+                    setRegisterError("Registration failed: " + (err.response.data || "Unknown error"));
                 }
             } else {
-                alert("Registration failed: Network error");
+                setRegisterError("Network error");
             }
         }
+
     };
     const handleSignUp = () => setRightPanelActive(true);
     const handleSignIn = () => setRightPanelActive(false);
@@ -106,21 +108,27 @@ function LoginPage() {
                             name="name"
                             placeholder="Name"
                             value={registerData.name}
-                            onChange={handleChange} />
+                            onChange={handleChange}
+
+                        />
                         <input type="email" placeholder="Email"
                             name="email"
                             value={registerData.email}
-                            onChange={handleChange} />
+                            onChange={handleChange}
+                            data-testid="register-email" />
                         <input type="password" placeholder="Password"
                             name="password"
                             value={registerData.password}
+                            data-testid="register-password"
                             onChange={handleChange} />
+                        {registerError && <p data-testid="register-error" className="error-message">{registerError}</p>}
+
                         <button type="submit">Sign Up</button>
                     </form>
                 </div>
 
                 <div className={`form-container sign-in-container ${rightPanelActive ? "shift" : ""}`}>
-                    <form onSubmit={handleLogin}>
+                    <form onSubmit={handleLogin} data-testid="login-form">
                         <h1>Sign in</h1>
 
 
@@ -129,6 +137,7 @@ function LoginPage() {
                             name="email"
                             value={loginData.email}
                             onChange={handleLoginChange}
+                            data-testid="login-email"
                             placeholder="Email"
                         />
                         <input
@@ -136,8 +145,11 @@ function LoginPage() {
                             name="password"
                             value={loginData.password}
                             onChange={handleLoginChange}
+                            data-testid="login-password"
                             placeholder="Password"
                         />
+                        {loginError && <p data-testid="login-error" className="error-message">{loginError}</p>}
+
                         <button type="submit">Sign In</button>
                     </form>
                 </div>
