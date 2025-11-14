@@ -16,6 +16,12 @@ public class UserController {
         this.userService = userService;
     }
 
+    @PostMapping("/exists")
+    public ResponseEntity<Void> checkUserExists(@RequestBody UserDTO dto) {
+        boolean exists = userService.findByEmail(dto.getEmail()).isPresent();
+        return exists ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+    }
+
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@RequestBody UserDTO dto) {
         return ResponseEntity.ok(userService.register(dto));

@@ -1,7 +1,31 @@
 describe('Login Page', () => {
+
+
+    const testEmail = 'admin@example.com';
+    const testPassword = 'duc123';
+
+    before(() => {
+        cy.request({
+            method: 'POST',
+            url: `${Cypress.env('apiUrl')}/api/users/exists`,
+            failOnStatusCode: false,
+            body: { email: testEmail }
+        }).then((response) => {
+            if (response.status === 404) {
+                cy.request('POST', `${Cypress.env('apiUrl')}/api/users/register`, {
+                    name: 'Admin User',
+                    email: testEmail,
+                    password: testPassword
+                });
+            } else {
+                cy.log("User exists, skipping creation");
+            }
+        });
+    });
     beforeEach(() => {
         cy.visit('http://localhost:5173');
     });
+
 
     it('shows error message for empty login fields', () => {
         cy.get('[data-testid="login-form"]').within(() => {

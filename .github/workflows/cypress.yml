@@ -1,8 +1,7 @@
 name: Cypress E2E Tests
 
-# Trigger workflow manually or on push/PR
 on:
-  workflow_dispatch:   # <-- allows manual trigger
+  workflow_dispatch:   
   push:
     branches:
       - main
