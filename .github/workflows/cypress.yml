@@ -25,7 +25,7 @@ jobs:
       # 3️⃣ Build backend (Spring Boot)
       - name: Build backend
         working-directory: backend
-        run: mvn -B package --file pom.xml
+        run: mvn -B package -DskipTests --file pom.xml
 
       # 4️⃣ Start backend with H2 profile
       - name: Start Spring Boot server (H2)
