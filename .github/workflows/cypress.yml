@@ -1,44 +1,66 @@
 name: Cypress E2E Tests
 
 on:
-  workflow_dispatch:   
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
+  workflow_dispatch:   # allow manual triggering
 
 jobs:
   e2e:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      # 1️⃣ Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      # 2️⃣ Setup Java 17
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      # 3️⃣ Build backend (Spring Boot)
+      - name: Build backend
+        working-directory: backend
+        run: mvn -B package --file pom.xml
+
+      # 4️⃣ Start backend with H2 profile
+      - name: Start Spring Boot server (H2)
+        working-directory: backend
+        run: |
+          mvn spring-boot:run -Dspring-boot.run.profiles=ci &
+          sleep 10
+
+      # 5️⃣ Setup Node.js
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      - name: Install dependencies
+      # 6️⃣ Install frontend dependencies
+      - name: Install frontend dependencies
+        working-directory: frontend
         run: npm install
 
-      - name: Start backend
-        run: |
-          npm run start-backend &
-          sleep 5
-
-      - name: Start frontend
+      # 7️⃣ Start frontend server
+      - name: Start frontend server
+        working-directory: frontend
         run: |
           npm run dev &
-          sleep 5
+          sleep 10
 
-      - name: Run Cypress login spec
+      # 8️⃣ Run Cypress E2E tests
+      - name: Run Cypress Tests
+        working-directory: frontend
         run: npx cypress run --spec "cypress/e2e/login/login.spec.js"
 
-      - name: Upload Cypress report
+      # 9️⃣ Upload Cypress results
+      - name: Upload test artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: cypress-report
-          path: cypress/results
+          path: frontend/cypress/results
