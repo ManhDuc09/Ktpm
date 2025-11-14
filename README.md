@@ -48,3 +48,10 @@ Run the Spring Boot application:
 
 
 <pre> mvn spring-boot:run </pre>
+
+
+Cypress frontend e2e test
+<pre> npx cypress open </pre>
+
+
+This opens the Cypress Test Runner for you to test
