@@ -26,11 +26,22 @@ Run the development server:
 Update your src/main/resources/application.properties file with your database credentials:
 
 <pre> 
+spring.application.name=backend
 
-spring.datasource.url=jdbc:mysql://localhost:3306/medical_app
+
+
+spring.datasource.url=jdbc:mysql://localhost:3306/manager?useSSL=false&serverTimezone=UTC
 spring.datasource.username=root
-spring.datasource.password=your_password
+spring.datasource.password=
+
+
 spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+
+
+spring.jpa.properties.hibernate.format_sql=true
+
 </pre>
 
 Run the Spring Boot application:
