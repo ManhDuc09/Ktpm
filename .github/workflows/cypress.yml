@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
   pull_request:
-  workflow_dispatch:   # allow manual triggering
+  workflow_dispatch:
 
 jobs:
   e2e:
@@ -22,17 +22,18 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      # 3️⃣ Build backend (Spring Boot)
+      # 3️⃣ Build backend
       - name: Build backend
         working-directory: backend
-        run: mvn -B package -DskipTests --file pom.xml
+        run: mvn -B package --file pom.xml
 
       # 4️⃣ Start backend with H2 profile
       - name: Start Spring Boot server (H2)
         working-directory: backend
         run: |
           mvn spring-boot:run -Dspring-boot.run.profiles=ci &
-          sleep 10
+          echo "Waiting for backend to start..."
+          sleep 15
 
       # 5️⃣ Setup Node.js
       - name: Setup Node
@@ -45,19 +46,23 @@ jobs:
         working-directory: frontend
         run: npm install
 
-      # 7️⃣ Start frontend server
+      # 7️⃣ Install wait-on
+      - name: Install wait-on
+        run: npm install -g wait-on
+
+      # 8️⃣ Start frontend server
       - name: Start frontend server
         working-directory: frontend
         run: |
           npm run dev &
-          sleep 10
+          wait-on http://localhost:5173
 
-      # 8️⃣ Run Cypress E2E tests
+      # 9️⃣ Run Cypress Tests headless
       - name: Run Cypress Tests
         working-directory: frontend
-        run: npx cypress run --spec "cypress/e2e/login/login.spec.js"
+        run: npx cypress run --headless --spec "cypress/e2e/login/login.spec.js"
 
-      # 9️⃣ Upload Cypress results
+      # 🔟 Upload Cypress results
       - name: Upload test artifacts
         if: always()
         uses: actions/upload-artifact@v4
