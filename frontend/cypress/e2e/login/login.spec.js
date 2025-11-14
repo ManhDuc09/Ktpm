@@ -26,15 +26,13 @@ describe('Login Page', () => {
         cy.visit('http://localhost:5173');
     });
 
+    it('should show validation messages for empty fields', () => {
+        cy.get('button[type="submit"]').contains('Sign In').click();
+        cy.get('[data-testid="login-error"]').should('contain', 'Both email and password are required!');
 
-    it('shows error message for empty login fields', () => {
-        cy.get('[data-testid="login-form"]').within(() => {
-            cy.get('button[type="submit"]').click();
-        });
-        cy.get('.error-message', { timeout: 5000 })
-            .should('be.visible')
-            .and('contain', 'Both email and password are required!');
     });
+
+
     it('should login successfully with valid credentials', () => {
         cy.get('.sign-in-container').within(() => {
             cy.get('input[name="email"]').type('admin@example.com');
@@ -49,11 +47,6 @@ describe('Login Page', () => {
         });
 
         cy.url().should('include', '/users/');
-    });
-    it('should show validation messages for empty fields', () => {
-        cy.get('button[type="submit"]').contains('Sign In').click();
-        cy.get('[data-testid="login-error"]').should('contain', 'Both email and password are required!');
-
     });
 
     it('should show error for incorrect password', () => {
