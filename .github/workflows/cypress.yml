@@ -11,59 +11,74 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout the repository
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup Java 17
       - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      # 3️⃣ Build backend
+      # Build backend JAR
       - name: Build backend
         working-directory: backend
-        run: mvn -B package --file pom.xml -DskipTests
+        run: mvn -B -DskipTests package
 
-      # 4️⃣ Start backend with H2 profile
-      - name: Start Spring Boot server (H2)
+      # Run backend JAR with CI profile
+      - name: Start backend
         working-directory: backend
         run: |
-          mvn spring-boot:run -Dspring-boot.run.profiles=ci &
-          echo "Waiting for backend to start..."
-          sleep 15
+          echo "Starting backend..."
+          java -jar target/*.jar --spring.profiles.active=ci > backend.log 2>&1 &
+        
+      # Wait for port 8080 (backend)
+      - name: Wait for backend
+        run: |
+          echo "Waiting for backend..."
+          for i in {1..30}; do
+            if nc -z localhost 8080; then
+              echo "Backend is up!"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Backend failed to start:"
+          cat backend/backend.log
+          exit 1
 
-      # 5️⃣ Setup Node.js
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      # 6️⃣ Install frontend dependencies
-      - name: Install frontend dependencies
+      - name: Install frontend deps
         working-directory: frontend
         run: npm install
 
-      # 7️⃣ Install wait-on
-      - name: Install wait-on
-        run: npm install -g wait-on
-
-      # 8️⃣ Start frontend server
-      - name: Start frontend server
+      - name: Start frontend
         working-directory: frontend
         run: |
-          npm run dev &
-          wait-on http://localhost:5173
+          npm run dev > frontend.log 2>&1 &
+      
+      - name: Wait for frontend
+        run: |
+          for i in {1..30}; do
+            if nc -z localhost 5173; then
+              echo "Frontend is up!"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Frontend failed to start:"
+          cat frontend/frontend.log
+          exit 1
 
-      # 9️⃣ Run Cypress Tests headless
-      - name: Run Cypress Tests
+      - name: Run Cypress tests
         working-directory: frontend
-        run: npx cypress run --headless --spec "cypress/e2e/login/login.spec.js"
+        run: npx cypress run --headless
 
-      # 🔟 Upload Cypress results
-      - name: Upload test artifacts
+      - name: Upload Cypress results
         if: always()
         uses: actions/upload-artifact@v4
         with:
