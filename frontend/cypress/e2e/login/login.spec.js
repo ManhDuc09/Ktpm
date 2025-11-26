@@ -7,12 +7,12 @@ describe('Login Page', () => {
     before(() => {
         cy.request({
             method: 'POST',
-            url: `${Cypress.env('apiUrl')}/api/users/exists`,
+            url: `${Cypress.env('apiUrl')}/api/auth/exists`,
             failOnStatusCode: false,
             body: { email: testEmail }
         }).then((response) => {
             if (response.status === 404) {
-                cy.request('POST', `${Cypress.env('apiUrl')}/api/users/register`, {
+                cy.request('POST', `${Cypress.env('apiUrl')}/api/auth/register`, {
                     name: 'Admin User',
                     email: testEmail,
                     password: testPassword
