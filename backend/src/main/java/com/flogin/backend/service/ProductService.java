@@ -18,6 +18,12 @@ public class ProductService {
     }
 
     public Product createProduct(ProductDTO dto, User user) {
+        if (dto.getTitle() == null || dto.getTitle().trim().isEmpty()) {
+            throw new IllegalArgumentException("Product title must not be empty");
+        }
+        if (dto.getQuantity() < 0) {
+            throw new IllegalArgumentException("Product quantity must be >= 0");
+        }
         Product product = new Product();
         product.setTitle(dto.getTitle());
         product.setDescription(dto.getDescription());
@@ -32,7 +38,13 @@ public class ProductService {
 
     public Product updateProduct(Long id, ProductDTO dto) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+        if (dto.getTitle() == null || dto.getTitle().trim().isEmpty()) {
+            throw new IllegalArgumentException("Product title must not be empty");
+        }
+        if (dto.getQuantity() < 0) {
+            throw new IllegalArgumentException("Product quantity must be >= 0");
+        }
         product.setTitle(dto.getTitle());
         product.setDescription(dto.getDescription());
         product.setQuantity(dto.getQuantity());

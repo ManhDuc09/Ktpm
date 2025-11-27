@@ -25,17 +25,17 @@ public class ProductController {
 
     // CREATE a new product for a user
     @PostMapping("/{userId}")
-    public ResponseEntity<Product> createProduct(@PathVariable Long userId, @RequestBody ProductDTO dto) {
-        User user = userService.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
+    public ResponseEntity<Product> createProduct(@PathVariable String userId, @RequestBody ProductDTO dto) {
+        User user = userService.findById(Long.parseLong(userId))
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
         Product product = productService.createProduct(dto, user);
         return ResponseEntity.ok(product);
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<List<Product>> getProducts(@PathVariable Long userId) {
-        User user = userService.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
+    public ResponseEntity<List<Product>> getProducts(@PathVariable String userId) {
+        User user = userService.findById(Long.parseLong(userId))
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
         List<Product> products = productService.getProductsByUser(user);
         return ResponseEntity.ok(products);
     }
@@ -48,7 +48,11 @@ public class ProductController {
 
     @DeleteMapping("/{productId}")
     public ResponseEntity<String> deleteProduct(@PathVariable Long productId) {
-        productService.deleteProduct(productId);
-        return ResponseEntity.ok("Product deleted successfully");
+        try {
+            productService.deleteProduct(productId);
+            return ResponseEntity.ok("Product deleted successfully");
+        } catch (com.flogin.backend.exception.ResourceNotFoundException ex) {
+            return ResponseEntity.status(404).body("Product not found");
+        }
     }
 }

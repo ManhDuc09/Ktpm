@@ -4,11 +4,14 @@ import axios from "axios";
 import "./UserPage.css";
 
 const UserPage = () => {
-    const { id } = useParams(); // user id from URL
+    let { id } = useParams(); // user id from URL
+    id = Number(id); // Đảm bảo id là số
     const [products, setProducts] = useState([]);
     const [modalData, setModalData] = useState({ id: null, title: "", description: "", quantity: 0 });
     const [isEdit, setIsEdit] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [titleError, setTitleError] = useState("");
+    const [quantityError, setQuantityError] = useState("");
 
     // Fetch products for this user
     useEffect(() => {
@@ -43,6 +46,16 @@ const UserPage = () => {
     };
 
     const handleSave = async () => {
+        setTitleError("");
+        setQuantityError("");
+        if (!modalData.title || modalData.title.trim() === "") {
+            setTitleError("Title is required");
+            return;
+        }
+        if (modalData.quantity < 0) {
+            setQuantityError("Quantity must be >= 0");
+            return;
+        }
         try {
             if (isEdit) {
                 // Update product
@@ -61,8 +74,18 @@ const UserPage = () => {
             }
             setShowModal(false);
         } catch (error) {
+            if (error.response && error.response.data && typeof error.response.data === "string") {
+                if (error.response.data.includes("title")) {
+                    setTitleError("Title is required");
+                } else if (error.response.data.includes("quantity")) {
+                    setQuantityError("Quantity must be >= 0");
+                } else {
+                    alert("Failed to save product.");
+                }
+            } else {
+                alert("Failed to save product.");
+            }
             console.error("Error saving product:", error);
-            alert("Failed to save product.");
         }
     };
 
@@ -73,8 +96,17 @@ const UserPage = () => {
             await axios.delete(`http://localhost:8080/api/products/${productId}`);
             setProducts(products.filter(p => p.id !== productId));
         } catch (error) {
+            if (
+                error.response &&
+                error.response.status === 404 &&
+                typeof error.response.data === "string" &&
+                error.response.data.includes("not found")
+            ) {
+                alert("Product not found");
+            } else {
+                alert("Failed to delete product.");
+            }
             console.error("Error deleting product:", error);
-            alert("Failed to delete product.");
         }
     };
     const handleLogout = () => {
@@ -149,6 +181,9 @@ const UserPage = () => {
                             onChange={handleChange}
                             className="form-control my-2"
                         />
+                        {titleError && (
+                            <div style={{ color: 'red', marginTop: '-10px', marginBottom: '10px' }}>{titleError}</div>
+                        )}
                         <input
                             type="text"
                             name="description"
@@ -165,6 +200,9 @@ const UserPage = () => {
                             onChange={handleChange}
                             className="form-control my-2"
                         />
+                        {quantityError && (
+                            <div style={{ color: 'red', marginTop: '-10px', marginBottom: '10px' }}>{quantityError}</div>
+                        )}
                         <div className="d-flex justify-content-end mt-2">
                             <button className="btn btn-secondary me-2" onClick={closeModal}>Cancel</button>
                             <button className="btn btn-primary" onClick={handleSave}>Save</button>

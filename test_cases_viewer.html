@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Cases - Đồ Án KTPM</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            background: #f5f5f5;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .nav-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            border: none;
+            background: none;
+            font-size: 1.1em;
+        }
+        
+        .nav-tab:hover {
+            background: #e0e0e0;
+        }
+        
+        .nav-tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .tab-pane {
+            display: none;
+        }
+        
+        .tab-pane.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .info-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
+        
+        .info-box h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .info-box ul {
+            margin-left: 20px;
+            color: #856404;
+        }
+        
+        .info-box li {
+            margin: 8px 0;
+        }
+        
+        .info-box code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #d63384;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        table tbody tr {
+            transition: background 0.3s;
+        }
+        
+        table tbody tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .priority-critical {
+            background: #ff4444;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        
+        .priority-high {
+            background: #ff8800;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        
+        .priority-medium {
+            background: #00C851;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        
+        .test-case-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .test-case-card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            transform: translateY(-5px);
+        }
+        
+        .test-case-card h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .field-row {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 15px;
+            margin: 15px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .field-label {
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        .field-value {
+            color: #212529;
+        }
+        
+        .field-value ul {
+            margin-left: 20px;
+        }
+        
+        .field-value li {
+            margin: 5px 0;
+        }
+        
+        .status-box {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 5px;
+        }
+        
+        .status-box label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .status-box input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-success {
+            background: #00C851;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #00a141;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 TEST CASES - ĐỒ ÁN KIỂM THỬ PHẦN MỀM</h1>
+            <p>Hệ thống quản lý người dùng và sản phẩm</p>
+        </div>
+        
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('setup')">📋 Hướng Dẫn Setup</button>
+            <button class="nav-tab" onclick="showTab('login')">🔐 Login Test Cases</button>
+            <button class="nav-tab" onclick="showTab('product')">📦 Product Test Cases</button>
+        </div>
+        
+        <div class="content">
+            <!-- Setup Tab -->
+            <div id="setup" class="tab-pane active">
+                <div class="info-box">
+                    <h3>⚙️ Thông Tin Hệ Thống</h3>
+                    <ul>
+                        <li><strong>Frontend:</strong> <code>http://localhost:5173</code> (đang chạy)</li>
+                        <li><strong>Backend:</strong> <code>http://localhost:8080</code> (cần restart)</li>
+                        <li><strong>Database:</strong> MySQL - <code>manager</code></li>
+                    </ul>
+                </div>
+                
+                <div class="info-box">
+                    <h3>👤 Tài Khoản Test Có Sẵn</h3>
+                    <ul>
+                        <li><strong>User ID:</strong> 1</li>
+                        <li><strong>Name:</strong> Duc</li>
+                        <li><strong>Email:</strong> <code>duccute3@gmail.com</code></li>
+                        <li><strong>⚠️ Password:</strong> Chưa rõ - cần kiểm tra hoặc đăng ký mới</li>
+                    </ul>
+                </div>
+                
+                <div class="info-box">
+                    <h3>📝 Hướng Dẫn Test</h3>
+                    <ul>
+                        <li><strong>Bước 1:</strong> Restart Backend (nếu bị stop)</li>
+                        <li><strong>Bước 2:</strong> Truy cập <code>http://localhost:5173</code></li>
+                        <li><strong>Bước 3:</strong> Thử đăng nhập với <code>duccute3@gmail.com</code></li>
+                        <li><strong>Bước 4:</strong> Nếu không được, click "Register" để tạo user mới</li>
+                        <li><strong>Bước 5:</strong> Test theo từng test case dưới đây</li>
+                        <li><strong>Bước 6:</strong> Ghi kết quả (Pass/Fail) và chụp screenshot</li>
+                    </ul>
+                </div>
+                
+                <div class="btn-group">
+                    <a href="http://localhost:5173" target="_blank" class="btn btn-primary">🚀 Mở Frontend</a>
+                    <button class="btn btn-success" onclick="showTab('login')">▶️ Bắt Đầu Test Login</button>
+                </div>
+            </div>
+            
+            <!-- Login Test Cases Tab -->
+            <div id="login" class="tab-pane">
+                <h2 style="color: #667eea; margin-bottom: 30px;">🔐 LOGIN TEST SCENARIOS</h2>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 100px;">ID</th>
+                            <th>Test Scenario</th>
+                            <th style="width: 150px;">Category</th>
+                            <th style="width: 120px;">Priority</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>TS_LOGIN_01</td>
+                            <td>Đăng nhập thành công với credentials hợp lệ</td>
+                            <td>Happy Path</td>
+                            <td><span class="priority-critical">Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>TS_LOGIN_02</td>
+                            <td>Đăng nhập với email rỗng</td>
+                            <td>Negative Test</td>
+                            <td><span class="priority-high">High</span></td>
+                        </tr>
+                        <tr>
+                            <td>TS_LOGIN_03</td>
+                            <td>Đăng nhập với password rỗng</td>
+                            <td>Negative Test</td>
+                            <td><span class="priority-high">High</span></td>
+                        </tr>
+                        <tr>
+                            <td>TS_LOGIN_04</td>
+                            <td>Đăng nhập với email không đúng format</td>
+                            <td>Negative Test</td>
+                            <td><span class="priority-high">High</span></td>
+                        </tr>
+                        <tr>
+                            <td>TS_LOGIN_05</td>
+                            <td>Đăng nhập với email không tồn tại</td>
+                            <td>Negative Test</td>
+                            <td><span class="priority-critical">Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>TS_LOGIN_06</td>
+                            <td>Đăng nhập với password sai</td>
+                            <td>Negative Test</td>
+                            <td><span class="priority-critical">Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>TS_LOGIN_07</td>
+                            <td>Đăng nhập với password dưới min length (&lt;6 ký tự)</td>
+                            <td>Boundary Test</td>
+                            <td><span class="priority-high">High</span></td>
+                        </tr>
+                        <tr>
+                            <td>TS_LOGIN_08</td>
+                            <td>Đăng nhập với email có khoảng trắng đầu/cuối</td>
+                            <td>Edge Case</td>
+                            <td><span class="priority-medium">Medium</span></td>
+                        </tr>
+                        <tr>
+                            <td>TS_LOGIN_09</td>
+                            <td>Đăng nhập với password có ký tự đặc biệt</td>
+                            <td>Edge Case</td>
+                            <td><span class="priority-medium">Medium</span></td>
+                        </tr>
+                        <tr>
+                            <td>TS_LOGIN_10</td>
+                            <td>Đăng nhập với email ở giới hạn min/max (3/50 ký tự)</td>
+                            <td>Boundary Test</td>
+                            <td><span class="priority-medium">Medium</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h2 style="color: #667eea; margin: 40px 0 30px 0;">📝 CHI TIẾT 5 TEST CASES QUAN TRỌNG</h2>
+                
+                <div class="test-case-card">
+                    <h3>TC_LOGIN_001: Đăng nhập thành công</h3>
+                    <div class="field-row">
+                        <div class="field-label">Priority:</div>
+                        <div class="field-value"><span class="priority-critical">Critical</span></div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Preconditions:</div>
+                        <div class="field-value">User đã đăng ký với email: testuser@gmail.com / Password: Test123456</div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Test Steps:</div>
+                        <div class="field-value">
+                            <ul>
+                                <li><strong>Step 1:</strong> Truy cập http://localhost:5173/</li>
+                                <li><strong>Step 2:</strong> Nhập email: testuser@gmail.com</li>
+                                <li><strong>Step 3:</strong> Nhập password: Test123456</li>
+                                <li><strong>Step 4:</strong> Click "Sign In"</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Expected Result:</div>
+                        <div class="field-value">
+                            <ul>
+                                <li><strong>✅ Success message:</strong> Alert "Login successful!" hoặc không có lỗi</li>
+                                <li><strong>✅ HTTP Status:</strong> 200 OK (kiểm tra trong Network tab)</li>
+                                <li><strong>✅ Response body:</strong> {"id":1, "name":"Test User", "email":"testuser@gmail.com"}</li>
+                                <li><strong>✅ Token stored:</strong> localStorage lưu key "user" với user data (kiểm tra trong Application > Local Storage)</li>
+                                <li><strong>✅ Redirect to dashboard:</strong> URL thay đổi thành http://localhost:5173/users/1</li>
+                                <li><strong>✅ Dashboard hiển thị:</strong> Trang Product Dashboard với nút Add Product, Logout</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">📸 Screenshots cần chụp:</div>
+                        <div class="field-value">
+                            <ul>
+                                <li>1️⃣ Trang login với form đã điền (trước khi click Sign In)</li>
+                                <li>2️⃣ DevTools Network tab - Request POST /api/users/login - Status 200 OK</li>
+                                <li>3️⃣ DevTools Network tab - Response body (user object)</li>
+                                <li>4️⃣ DevTools Application tab - Local Storage - key "user"</li>
+                                <li>5️⃣ URL bar hiển thị /users/1</li>
+                                <li>6️⃣ Product Dashboard đầy đủ (sau khi redirect)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="status-box">
+                        <strong>Status:</strong>
+                        <label><input type="checkbox"> Not Run</label>
+                        <label><input type="checkbox"> Pass</label>
+                        <label><input type="checkbox"> Fail</label>
+                    </div>
+                </div>
+                
+                <div class="test-case-card">
+                    <h3>TC_LOGIN_002: Email không tồn tại</h3>
+                    <div class="field-row">
+                        <div class="field-label">Priority:</div>
+                        <div class="field-value"><span class="priority-critical">Critical</span></div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Test Steps:</div>
+                        <div class="field-value">
+                            <ul>
+                                <li>Nhập email không tồn tại: nonexistent@gmail.com</li>
+                                <li>Nhập bất kỳ password nào</li>
+                                <li>Click Sign In</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Expected Result:</div>
+                        <div class="field-value">
+                            <ul>
+                                <li>❌ HTTP 401 Unauthorized</li>
+                                <li>❌ Error: "Invalid email or password!"</li>
+                                <li>❌ Không lưu localStorage</li>
+                                <li>❌ Ở lại trang login</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="status-box">
+                        <strong>Status:</strong>
+                        <label><input type="checkbox"> Not Run</label>
+                        <label><input type="checkbox"> Pass</label>
+                        <label><input type="checkbox"> Fail</label>
+                    </div>
+                </div>
+                
+                <div class="test-case-card">
+                    <h3>TC_LOGIN_003: Password sai</h3>
+                    <div class="field-row">
+                        <div class="field-label">Priority:</div>
+                        <div class="field-value"><span class="priority-critical">Critical</span></div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Preconditions:</div>
+                        <div class="field-value">User testuser@gmail.com đã tồn tại với password đúng là Test123456</div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Test Steps:</div>
+                        <div class="field-value">
+                            <ul>
+                                <li><strong>Step 1:</strong> Truy cập http://localhost:5173/</li>
+                                <li><strong>Step 2:</strong> Nhập email: testuser@gmail.com</li>
+                                <li><strong>Step 3:</strong> Nhập password SAI: WrongPassword123</li>
+                                <li><strong>Step 4:</strong> Click "Sign In"</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Expected Result:</div>
+                        <div class="field-value">
+                            <ul>
+                                <li>❌ HTTP 401 Unauthorized</li>
+                                <li>❌ Error message: "Invalid email or password!"</li>
+                                <li>❌ localStorage không lưu user data</li>
+                                <li>❌ Vẫn ở trang login (không redirect)</li>
+                                <li>❌ Form không bị clear (giữ email đã nhập)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">📸 Screenshot cần chụp:</div>
+                        <div class="field-value">1 ảnh: Error message "Invalid email or password!" + Network tab Status 401</div>
+                    </div>
+                    <div class="status-box">
+                        <strong>Status:</strong>
+                        <label><input type="checkbox"> Not Run</label>
+                        <label><input type="checkbox"> Pass</label>
+                        <label><input type="checkbox"> Fail</label>
+                    </div>
+                </div>
+                
+                <div class="test-case-card">
+                    <h3>TC_LOGIN_004: Email rỗng</h3>
+                    <div class="field-row">
+                        <div class="field-label">Priority:</div>
+                        <div class="field-value"><span class="priority-high">High</span></div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Test Steps:</div>
+                        <div class="field-value">
+                            <ul>
+                                <li><strong>Step 1:</strong> Truy cập http://localhost:5173/</li>
+                                <li><strong>Step 2:</strong> Để trống email (không nhập gì)</li>
+                                <li><strong>Step 3:</strong> Nhập password: Test123456</li>
+                                <li><strong>Step 4:</strong> Click "Sign In"</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Expected Result:</div>
+                        <div class="field-value">
+                            <ul>
+                                <li>❌ Validation error trước khi gọi API</li>
+                                <li>❌ Error message: "Email is required" hoặc "Please fill in this field"</li>
+                                <li>❌ Không gọi POST /api/users/login (kiểm tra Network tab)</li>
+                                <li>❌ Input email có border đỏ (validation UI)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">📸 Screenshot cần chụp:</div>
+                        <div class="field-value">1 ảnh: Error message + input border đỏ + Network tab (không có request login)</div>
+                    </div>
+                    <div class="status-box">
+                        <strong>Status:</strong>
+                        <label><input type="checkbox"> Not Run</label>
+                        <label><input type="checkbox"> Pass</label>
+                        <label><input type="checkbox"> Fail</label>
+                    </div>
+                </div>
+                
+                <div class="test-case-card">
+                    <h3>TC_LOGIN_005: Email không đúng format</h3>
+                    <div class="field-row">
+                        <div class="field-label">Priority:</div>
+                        <div class="field-value"><span class="priority-high">High</span></div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Test Data:</div>
+                        <div class="field-value">
+                            <ul>
+                                <li>Email: <code>invalidemail</code> (không có @)</li>
+                                <li>Password: Test123456</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Test Steps:</div>
+                        <div class="field-value">
+                            <ul>
+                                <li><strong>Step 1:</strong> Nhập email không đúng format: invalidemail</li>
+                                <li><strong>Step 2:</strong> Nhập password: Test123456</li>
+                                <li><strong>Step 3:</strong> Click "Sign In"</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Expected Result:</div>
+                        <div class="field-value">
+                            <ul>
+                                <li>❌ HTML5 validation error: "Please include an '@' in the email address"</li>
+                                <li>❌ Hoặc custom validation: "Invalid email format"</li>
+                                <li>❌ Không gọi API</li>
+                                <li>❌ Input email focus + error state</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">📸 Screenshot cần chụp:</div>
+                        <div class="field-value">1 ảnh: HTML5 validation tooltip hoặc error message</div>
+                    </div>
+                    <div class="status-box">
+                        <strong>Status:</strong>
+                        <label><input type="checkbox"> Not Run</label>
+                        <label><input type="checkbox"> Pass</label>
+                        <label><input type="checkbox"> Fail</label>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <!-- Product Test Cases Tab -->
+            <div id="product" class="tab-pane">
+                <h2 style="color: #667eea; margin-bottom: 30px;">📦 PRODUCT TEST SCENARIOS</h2>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 120px;">ID</th>
+                            <th>Test Scenario</th>
+                            <th style="width: 150px;">Category</th>
+                            <th style="width: 120px;">Priority</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>TS_PRODUCT_01</td>
+                            <td>Tạo sản phẩm mới thành công</td>
+                            <td>Happy Path</td>
+                            <td><span class="priority-critical">Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>TS_PRODUCT_02</td>
+                            <td>Xem danh sách sản phẩm của user</td>
+                            <td>Happy Path</td>
+                            <td><span class="priority-critical">Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>TS_PRODUCT_03</td>
+                            <td>Cập nhật sản phẩm thành công</td>
+                            <td>Happy Path</td>
+                            <td><span class="priority-critical">Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>TS_PRODUCT_04</td>
+                            <td>Xóa sản phẩm thành công</td>
+                            <td>Happy Path</td>
+                            <td><span class="priority-critical">Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>TS_PRODUCT_05</td>
+                            <td>Tạo sản phẩm với title rỗng</td>
+                            <td>Negative Test</td>
+                            <td><span class="priority-high">High</span></td>
+                        </tr>
+                        <tr>
+                            <td>TS_PRODUCT_06</td>
+                            <td>Tạo sản phẩm với quantity âm</td>
+                            <td>Negative Test</td>
+                            <td><span class="priority-high">High</span></td>
+                        </tr>
+                        <tr>
+                            <td>TS_PRODUCT_07</td>
+                            <td>Tạo với title dưới min (&lt; 3 ký tự)</td>
+                            <td>Boundary Test</td>
+                            <td><span class="priority-high">High</span></td>
+                        </tr>
+                        <tr>
+                            <td>TS_PRODUCT_08</td>
+                            <td>Tạo với title = 3 ký tự (min boundary)</td>
+                            <td>Boundary Test</td>
+                            <td><span class="priority-medium">Medium</span></td>
+                        </tr>
+                        <tr>
+                            <td>TS_PRODUCT_09</td>
+                            <td>Tạo với title = 100 ký tự (max boundary)</td>
+                            <td>Boundary Test</td>
+                            <td><span class="priority-medium">Medium</span></td>
+                        </tr>
+                        <tr>
+                            <td>TS_PRODUCT_10</td>
+                            <td>Update product của user khác (Security)</td>
+                            <td>Security Test</td>
+                            <td><span class="priority-critical">Critical</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h2 style="color: #667eea; margin: 40px 0 30px 0;">📝 CHI TIẾT 5 TEST CASES QUAN TRỌNG</h2>
+                
+                <div class="test-case-card">
+                    <h3>TC_PRODUCT_001: Tạo sản phẩm mới thành công</h3>
+                    <div class="field-row">
+                        <div class="field-label">Priority:</div>
+                        <div class="field-value"><span class="priority-critical">Critical</span></div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Preconditions:</div>
+                        <div class="field-value">User đã đăng nhập, userId = 1</div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Test Steps:</div>
+                        <div class="field-value">
+                            <ul>
+                                <li><strong>Step 1:</strong> Click "Add Product"</li>
+                                <li><strong>Step 2:</strong> Nhập title: "Laptop Dell"</li>
+                                <li><strong>Step 3:</strong> Nhập description: "High performance"</li>
+                                <li><strong>Step 4:</strong> Nhập quantity: 10</li>
+                                <li><strong>Step 5:</strong> Click Save</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Expected Result:</div>
+                        <div class="field-value">
+                            <ul>
+                                <li>✅ POST /api/products/1</li>
+                                <li>✅ HTTP 201 Created</li>
+                                <li>✅ Product lưu vào DB</li>
+                                <li>✅ Product hiển thị trong list</li>
+                                <li>✅ Modal đóng lại</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="status-box">
+                        <strong>Status:</strong>
+                        <label><input type="checkbox"> Not Run</label>
+                        <label><input type="checkbox"> Pass</label>
+                        <label><input type="checkbox"> Fail</label>
+                    </div>
+                </div>
+                
+                <div class="test-case-card">
+                    <h3>TC_PRODUCT_002: Xem danh sách sản phẩm</h3>
+                    <div class="field-row">
+                        <div class="field-label">Priority:</div>
+                        <div class="field-value"><span class="priority-critical">Critical</span></div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Preconditions:</div>
+                        <div class="field-value">
+                            <ul>
+                                <li>User đã đăng nhập (userId = 1)</li>
+                                <li>User đã có ít nhất 2 products trong DB</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Test Steps:</div>
+                        <div class="field-value">
+                            <ul>
+                                <li><strong>Step 1:</strong> Đăng nhập thành công</li>
+                                <li><strong>Step 2:</strong> Quan sát Product Dashboard</li>
+                                <li><strong>Step 3:</strong> Kiểm tra danh sách products hiển thị</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Expected Result:</div>
+                        <div class="field-value">
+                            <ul>
+                                <li>✅ GET /api/products/1 - Status 200 OK</li>
+                                <li>✅ Response: Array of products</li>
+                                <li>✅ Mỗi product hiển thị: title, description, quantity</li>
+                                <li>✅ Có nút Edit và Delete cho mỗi product</li>
+                                <li>✅ Hiển thị đúng số lượng products</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">📸 Screenshot cần chụp:</div>
+                        <div class="field-value">1 ảnh: Product list đầy đủ + Network tab GET /api/products/1 Status 200</div>
+                    </div>
+                    <div class="status-box">
+                        <strong>Status:</strong>
+                        <label><input type="checkbox"> Not Run</label>
+                        <label><input type="checkbox"> Pass</label>
+                        <label><input type="checkbox"> Fail</label>
+                    </div>
+                </div>
+                
+                <div class="test-case-card">
+                    <h3>TC_PRODUCT_003: Cập nhật sản phẩm thành công</h3>
+                    <div class="field-row">
+                        <div class="field-label">Priority:</div>
+                        <div class="field-value"><span class="priority-critical">Critical</span></div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Preconditions:</div>
+                        <div class="field-value">Product với ID=1 đã tồn tại, title="Laptop Dell", quantity=10</div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Test Steps:</div>
+                        <div class="field-value">
+                            <ul>
+                                <li><strong>Step 1:</strong> Click nút "Edit" của product ID=1</li>
+                                <li><strong>Step 2:</strong> Sửa title thành "Laptop Dell XPS 15"</li>
+                                <li><strong>Step 3:</strong> Sửa quantity thành 15</li>
+                                <li><strong>Step 4:</strong> Click "Save"</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Expected Result:</div>
+                        <div class="field-value">
+                            <ul>
+                                <li>✅ PUT /api/products/1/1 - Status 200 OK</li>
+                                <li>✅ Response: Updated product object</li>
+                                <li>✅ Product list tự động refresh</li>
+                                <li>✅ Hiển thị title và quantity mới</li>
+                                <li>✅ Modal đóng lại</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">📸 Screenshot cần chụp:</div>
+                        <div class="field-value">1 ảnh: Product list sau khi update + Network tab PUT Status 200</div>
+                    </div>
+                    <div class="status-box">
+                        <strong>Status:</strong>
+                        <label><input type="checkbox"> Not Run</label>
+                        <label><input type="checkbox"> Pass</label>
+                        <label><input type="checkbox"> Fail</label>
+                    </div>
+                </div>
+                
+                <div class="test-case-card">
+                    <h3>TC_PRODUCT_004: Xóa sản phẩm thành công</h3>
+                    <div class="field-row">
+                        <div class="field-label">Priority:</div>
+                        <div class="field-value"><span class="priority-critical">Critical</span></div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Preconditions:</div>
+                        <div class="field-value">Product với ID=2 đã tồn tại trong danh sách</div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Test Steps:</div>
+                        <div class="field-value">
+                            <ul>
+                                <li><strong>Step 1:</strong> Xác định product cần xóa (ID=2)</li>
+                                <li><strong>Step 2:</strong> Click nút "Delete"</li>
+                                <li><strong>Step 3:</strong> Confirm xóa (nếu có popup)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Expected Result:</div>
+                        <div class="field-value">
+                            <ul>
+                                <li>✅ DELETE /api/products/1/2 - Status 200 OK hoặc 204 No Content</li>
+                                <li>✅ Product biến mất khỏi danh sách ngay lập tức</li>
+                                <li>✅ Số lượng products giảm đi 1</li>
+                                <li>✅ Không có error message</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">📸 Screenshot cần chụp:</div>
+                        <div class="field-value">1 ảnh: Product list sau khi xóa + Network tab DELETE Status 200</div>
+                    </div>
+                    <div class="status-box">
+                        <strong>Status:</strong>
+                        <label><input type="checkbox"> Not Run</label>
+                        <label><input type="checkbox"> Pass</label>
+                        <label><input type="checkbox"> Fail</label>
+                    </div>
+                </div>
+                
+                <div class="test-case-card">
+                    <h3>TC_PRODUCT_005: Tạo sản phẩm với title rỗng</h3>
+                    <div class="field-row">
+                        <div class="field-label">Priority:</div>
+                        <div class="field-value"><span class="priority-high">High</span></div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Test Steps:</div>
+                        <div class="field-value">
+                            <ul>
+                                <li><strong>Step 1:</strong> Click "Add Product"</li>
+                                <li><strong>Step 2:</strong> Để trống title</li>
+                                <li><strong>Step 3:</strong> Nhập description: "Test"</li>
+                                <li><strong>Step 4:</strong> Nhập quantity: 10</li>
+                                <li><strong>Step 5:</strong> Click "Save"</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">Expected Result:</div>
+                        <div class="field-value">
+                            <ul>
+                                <li>❌ Validation error: "Title is required"</li>
+                                <li>❌ Hoặc HTTP 400 Bad Request nếu gọi API</li>
+                                <li>❌ Product không được tạo</li>
+                                <li>❌ Input title có border đỏ</li>
+                                <li>❌ Modal không đóng</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">📸 Screenshot cần chụp:</div>
+                        <div class="field-value">1 ảnh: Error message "Title is required" + input border đỏ</div>
+                    </div>
+                    <div class="status-box">
+                        <strong>Status:</strong>
+                        <label><input type="checkbox"> Not Run</label>
+                        <label><input type="checkbox"> Pass</label>
+                        <label><input type="checkbox"> Fail</label>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-pane');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active class from all nav tabs
+            const navTabs = document.querySelectorAll('.nav-tab');
+            navTabs.forEach(nav => nav.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked nav tab
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

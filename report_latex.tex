@@ -1,0 +1,852 @@
+\UseRawInputEncoding
+\documentclass[a4paper,12pt]{article}
+
+% --- Vietnamese support ---
+\usepackage[utf8]{inputenc}
+\usepackage[T5]{fontenc}
+\usepackage[vietnamese]{babel}
+\usepackage[hidelinks]{hyperref}
+% --- Graphics ---
+\usepackage{graphicx}  % for screenshots
+\usepackage{float}     % to control figure placement
+
+% --- Page layout ---
+\usepackage[a4paper, margin=2.5cm]{geometry}
+
+% --- For clickable TOC links (optional) ---
+\usepackage{hyperref}
+
+% --- For tables ---
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{longtable}
+\usepackage{array}
+
+% --- Cấu hình lstlisting ---
+\lstdefinelanguage{yaml}{
+  basicstyle=\ttfamily\small,
+  sensitive=true,
+  morestring=[b]",
+  morecomment=[l]{\#},
+  morekeywords={true,false,null}
+}
+
+\lstset{
+  backgroundcolor=\color{white},
+  basicstyle=\ttfamily\footnotesize,
+  breaklines=true,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny,
+  keywordstyle=\color{blue},
+  stringstyle=\color{orange},
+  commentstyle=\color{gray},
+  showstringspaces=false
+}
+
+% --- Title page ---
+\begin{document}
+
+\begin{titlepage}
+\centering
+{\large\textbf{TRƯỜNG ĐẠI HỌC SÀI GÒN}\\
+\textbf{KHOA CÔNG NGHỆ THÔNG TIN}}\par
+\vspace{1cm}
+
+\includegraphics[width=0.3\textwidth]{logoITSGU.png}\par\vspace{1cm}
+
+{\Huge\bfseries Báo cáo Kiểm thử phần mềm\par } 
+\vspace{1cm}
+{\Huge\bfseries Assignment 2\par}
+\vspace{1cm}
+
+% Thành viên
+\begin{center}
+\begin{minipage}{0.6\textwidth}
+\noindent {\large\textbf{THÀNH VIÊN:}}\par\vspace{0.3cm}
+{\large
+Nguyễn Mạnh Đức      3122410088\par\vspace{0.2cm}
+Phạm Quốc Bảo        3122410022\par\vspace{0.2cm}
+Nguyễn Tường Huy     3123410128\par\vspace{0.2cm}
+Nguyễn Duy Bảo       3122410018\par\vspace{0.2cm}
+Vũ Mai Bằng          3123410032\par
+}
+\end{minipage}
+\end{center}
+
+\vspace{0.6cm}
+
+{\large GVHN : Từ Lãng Phiêu}
+
+\vfill
+{\large TP. Hồ Chí Minh, \today\par}
+\end{titlepage}
+
+% --- Table of Contents ---
+\tableofcontents
+\newpage
+
+% --- Sections ---
+\section{Giới thiệu project}
+
+Dự án là một website cơ bản được xây dựng nhằm thực hành quy trình phát triển và kiểm thử phần mềm.  
+Website bao gồm các chức năng chính như đăng ký, đăng nhập người dùng và hiển thị danh sách sản phẩm.  
+Mục tiêu của dự án là giúp sinh viên hiểu rõ quy trình từ thiết kế, lập trình đến kiểm thử, đồng thời áp dụng các công cụ hiện đại trong phát triển web.
+
+\vspace{0.5cm}
+
+\noindent\textbf{Công nghệ sử dụng:}
+
+\begin{itemize}
+    \item \textbf{Frontend:} ReactJS, HTML, CSS, JavaScript, Axios
+    \item \textbf{Backend:} Spring Boot, Spring Web, Spring Data JPA
+    \item \textbf{Database:} MySQL 
+    \item \textbf{Công cụ kiểm thử:} Postman, Jest / React Testing Library, JUnit, Mockito
+    \item \textbf{Quản lý mã nguồn và CI/CD:} GitHub, GitHub Actions
+\end{itemize}
+
+\section{Test cases chi tiết}
+
+\subsection{Login}
+
+\subsubsection{Phân tích yêu cầu chức năng}
+
+\paragraph{A. Validation Rules cho Email (Username)}
+
+Hệ thống sử dụng \textbf{email} làm username với các quy tắc sau:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{3cm}|p{3.5cm}|p{6cm}|}
+\hline
+\textbf{Tiêu chí} & \textbf{Yêu cầu} & \textbf{Mô tả chi tiết} \\
+\hline
+Định dạng & Email hợp lệ & Phải tuân thủ format email chuẩn (RFC 5322): local@domain.ext \\
+\hline
+Độ dài & 3-50 ký tự & Min: 3 ký tự (a@b.c), Max: 50 ký tự \\
+\hline
+Ký tự cho phép & a-z, A-Z, 0-9, -, ., \_ & Local part: chữ cái, số, dấu chấm, gạch ngang, gạch dưới \\
+\hline
+Bắt buộc & Required & Không được để trống hoặc null \\
+\hline
+Case sensitivity & Case-insensitive & Test@mail.com = test@mail.com \\
+\hline
+\end{tabular}
+\caption{Validation Rules cho Email}
+\end{table}
+
+\textbf{Frontend validation (LoginPage.jsx):}
+\begin{itemize}
+    \item Required field check: if (!loginData.email)
+    \item HTML5 email validation: type="email"
+    \item Empty string check
+\end{itemize}
+
+\textbf{Backend validation (UserService.java):}
+\begin{itemize}
+    \item Email existence check: userRepository.findByEmail(email)
+    \item Database query case-insensitive
+\end{itemize}
+
+\paragraph{B. Validation Rules cho Password}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{3cm}|p{3.5cm}|p{6cm}|}
+\hline
+\textbf{Tiêu chí} & \textbf{Yêu cầu} & \textbf{Mô tả chi tiết} \\
+\hline
+Độ dài & 6-100 ký tự & Min: 6 ký tự (password tối thiểu), Max: 100 ký tự \\
+\hline
+Thành phần & Phải có chữ và số & Ít nhất 1 chữ cái (a-z hoặc A-Z), Ít nhất 1 chữ số (0-9) \\
+\hline
+Bắt buộc & Required & Không được để trống hoặc null \\
+\hline
+Mã hóa & BCrypt & Hash password trước khi lưu vào DB \\
+\hline
+Case sensitivity & Case-sensitive & Password123 $\neq$ password123 \\
+\hline
+\end{tabular}
+\caption{Validation Rules cho Password}
+\end{table}
+
+\paragraph{C. Authentication Flow}
+
+\begin{enumerate}
+    \item \textbf{User Input:} Nhập email và password
+    \item \textbf{Frontend Validation:} Kiểm tra required, format email
+    \item \textbf{API Request:} POST /api/users/login với credentials
+    \item \textbf{Backend Authentication:}
+        \begin{itemize}
+            \item Tìm user theo email: userRepository.findByEmail()
+            \item Nếu không tìm thấy $\rightarrow$ 401 Unauthorized
+            \item Kiểm tra password với BCrypt: passwordEncoder.matches()
+            \item Nếu sai password $\rightarrow$ 401 Unauthorized
+            \item Nếu đúng $\rightarrow$ 200 OK, trả về user object
+        \end{itemize}
+    \item \textbf{Response Handling:}
+        \begin{itemize}
+            \item Success: Lưu user vào localStorage, redirect đến /users/\{id\}
+            \item Error: Hiển thị "Invalid email or password!"
+        \end{itemize}
+\end{enumerate}
+
+\subsubsection{Danh sách 10 Test Scenarios}
+
+\begin{longtable}{|p{2cm}|p{6cm}|p{2.5cm}|p{2cm}|}
+\hline
+\textbf{ID} & \textbf{Test Scenario} & \textbf{Category} & \textbf{Priority} \\
+\hline
+\endfirsthead
+\hline
+\textbf{ID} & \textbf{Test Scenario} & \textbf{Category} & \textbf{Priority} \\
+\hline
+\endhead
+TS\_LOGIN\_01 & Đăng nhập thành công với credentials hợp lệ & Happy Path & Critical \\
+\hline
+TS\_LOGIN\_02 & Đăng nhập với email rỗng & Negative Test & High \\
+\hline
+TS\_LOGIN\_03 & Đăng nhập với password rỗng & Negative Test & High \\
+\hline
+TS\_LOGIN\_04 & Đăng nhập với email không đúng format & Negative Test & High \\
+\hline
+TS\_LOGIN\_05 & Đăng nhập với email không tồn tại & Negative Test & Critical \\
+\hline
+TS\_LOGIN\_06 & Đăng nhập với password sai & Negative Test & Critical \\
+\hline
+TS\_LOGIN\_07 & Đăng nhập với password dưới min length (<6 ký tự) & Boundary Test & High \\
+\hline
+TS\_LOGIN\_08 & Đăng nhập với email có khoảng trắng đầu/cuối & Edge Case & Medium \\
+\hline
+TS\_LOGIN\_09 & Đăng nhập với password có ký tự đặc biệt & Edge Case & Medium \\
+\hline
+TS\_LOGIN\_10 & Đăng nhập với email ở giới hạn min/max (3/50 ký tự) & Boundary Test & Medium \\
+\hline
+\caption{Danh sách 10 Test Scenarios cho Login}
+\end{longtable}
+
+\subsubsection{Phân loại theo mức độ ưu tiên}
+
+\textbf{Critical Priority (3 scenarios - 30\%)}
+\begin{itemize}
+    \item TS\_LOGIN\_01: Core functionality, block toàn bộ app
+    \item TS\_LOGIN\_05: Security critical, prevent enumeration
+    \item TS\_LOGIN\_06: Authentication core, frequent failure
+\end{itemize}
+
+\textbf{High Priority (4 scenarios - 40\%)}
+\begin{itemize}
+    \item TS\_LOGIN\_02, 03: Basic validation, prevent API abuse
+    \item TS\_LOGIN\_04: Data integrity, format compliance
+    \item TS\_LOGIN\_07: Security requirement, password policy
+\end{itemize}
+
+\textbf{Medium Priority (3 scenarios - 30\%)}
+\begin{itemize}
+    \item TS\_LOGIN\_08, 09, 10: Edge cases, UX improvements
+\end{itemize}
+
+\subsubsection{Thiết kế 5 Test Cases chi tiết}
+
+\paragraph{TC\_LOGIN\_001: Đăng nhập thành công}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{4cm}|p{9cm}|}
+\hline
+\textbf{Field} & \textbf{Details} \\
+\hline
+Test Case ID & TC\_LOGIN\_001 \\
+\hline
+Priority & Critical \\
+\hline
+Preconditions & User account exists: testuser@gmail.com / Test123456 (BCrypt hash) \\
+\hline
+Test Steps & 
+\textbf{Step 1:} Navigate to http://localhost:5173/ \newline
+\textbf{Step 2:} Enter email: testuser@gmail.com \newline
+\textbf{Step 3:} Enter password: Test123456 \newline
+\textbf{Step 4:} Click "Sign In" button \\
+\hline
+Test Data & 
+\textbf{Email:} testuser@gmail.com \newline
+\textbf{Password:} Test123456 \\
+\hline
+Expected Result & 
+\textbf{API Response:} \newline
+• HTTP Status: 200 OK \newline
+• Body: \{id, name, email, password(hashed)\} \newline
+\newline
+\textbf{Frontend Behavior:} \newline
+• localStorage.setItem("user", ...) \newline
+• Redirect to /users/1 \newline
+• Dashboard displayed \newline
+• User name shown in header \\
+\hline
+Actual Result & \textit{(To be filled during execution)} \\
+\hline
+Status & $\square$ Not Run $\square$ Pass $\square$ Fail \\
+\hline
+\end{tabular}
+\caption{TC\_LOGIN\_001}
+\end{table}
+
+\paragraph{TC\_LOGIN\_002: Email không tồn tại}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{4cm}|p{9cm}|}
+\hline
+\textbf{Field} & \textbf{Details} \\
+\hline
+Test Case ID & TC\_LOGIN\_002 \\
+\hline
+Priority & Critical \\
+\hline
+Preconditions & Email nonexistent@gmail.com NOT in database \\
+\hline
+Test Steps & 
+\textbf{Step 1:} Navigate to login page \newline
+\textbf{Step 2:} Enter email: nonexistent@gmail.com \newline
+\textbf{Step 3:} Enter password: AnyPass123 \newline
+\textbf{Step 4:} Click Sign In \\
+\hline
+Test Data & 
+\textbf{Email:} nonexistent@gmail.com \newline
+\textbf{Password:} AnyPass123 \\
+\hline
+Expected Result & 
+\textbf{API Request:} \newline
+• POST /api/users/login \newline
+• HTTP 401 Unauthorized \newline
+\newline
+\textbf{Frontend:} \newline
+• Error: "Invalid email or password!" \newline
+• No localStorage update \newline
+• Stay on login page \newline
+\newline
+\textbf{Security:} Same error as wrong password \\
+\hline
+Actual Result & \textit{(To be filled during execution)} \\
+\hline
+Status & $\square$ Not Run $\square$ Pass $\square$ Fail \\
+\hline
+\end{tabular}
+\caption{TC\_LOGIN\_002}
+\end{table}
+
+\paragraph{TC\_LOGIN\_003: Password sai}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{4cm}|p{9cm}|}
+\hline
+\textbf{Field} & \textbf{Details} \\
+\hline
+Test Case ID & TC\_LOGIN\_003 \\
+\hline
+Priority & Critical \\
+\hline
+Preconditions & User exists: testuser@gmail.com, correct password: Test123456 \\
+\hline
+Test Steps & 
+1. Enter email: testuser@gmail.com \newline
+2. Enter password: WrongPassword123 \newline
+3. Click Sign In \\
+\hline
+Expected Result & 
+• User found by email \newline
+• BCrypt match fails \newline
+• HTTP 401 \newline
+• Error: "Invalid email or password!" \newline
+• Identical to TC\_LOGIN\_002 (security) \\
+\hline
+Test Data & 
+Email: testuser@gmail.com \newline
+Password: WrongPassword123 (incorrect) \\
+\hline
+Actual Result & \textit{(To be filled during execution)} \\
+\hline
+Status & $\square$ Not Run $\square$ Pass $\square$ Fail \\
+\hline
+\end{tabular}
+\caption{TC\_LOGIN\_003}
+\end{table}
+
+\paragraph{TC\_LOGIN\_004: Cả email và password rỗng}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{4cm}|p{9cm}|}
+\hline
+\textbf{Field} & \textbf{Details} \\
+\hline
+Test Case ID & TC\_LOGIN\_004 \\
+\hline
+Priority & High \\
+\hline
+Preconditions & User on login page \\
+\hline
+Test Steps & 
+1. Leave email empty \newline
+2. Leave password empty \newline
+3. Click Sign In \\
+\hline
+Expected Result & 
+• Client validation triggered \newline
+• Error: "Both email and password are required!" \newline
+• NO API call \newline
+• Stay on login page \\
+\hline
+Test Data & 
+Email: "" (empty) \newline
+Password: "" (empty) \\
+\hline
+Actual Result & \textit{(To be filled during execution)} \\
+\hline
+Status & $\square$ Not Run $\square$ Pass $\square$ Fail \\
+\hline
+\end{tabular}
+\caption{TC\_LOGIN\_004}
+\end{table}
+
+\paragraph{TC\_LOGIN\_005: Email sai định dạng}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{4cm}|p{9cm}|}
+\hline
+\textbf{Field} & \textbf{Details} \\
+\hline
+Test Case ID & TC\_LOGIN\_005 \\
+\hline
+Priority & High \\
+\hline
+Preconditions & User on login page \\
+\hline
+Test Steps & 
+1. Enter invalid email: notanemail \newline
+2. Enter password: Test123456 \newline
+3. Attempt to click Sign In \\
+\hline
+Expected Result & 
+• HTML5 validation error \newline
+• Browser message: "Please include '@' in email" \newline
+• Form submission blocked \newline
+• No API call \\
+\hline
+Test Data & Invalid formats: notanemail, user@, @domain.com \\
+\hline
+Actual Result & \textit{(To be filled during execution)} \\
+\hline
+Status & $\square$ Not Run $\square$ Pass $\square$ Fail \\
+\hline
+\end{tabular}
+\caption{TC\_LOGIN\_005}
+\end{table}
+
+\subsection{Product}
+
+\subsubsection{Phân tích yêu cầu CRUD}
+
+\paragraph{A. CREATE - Thêm sản phẩm mới}
+
+\textbf{Endpoint:} POST /api/products/\{userId\}
+
+\textbf{Validation Rules:}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{3cm}|p{3cm}|p{6.5cm}|}
+\hline
+\textbf{Field} & \textbf{Rule} & \textbf{Description} \\
+\hline
+Title & 3-100 ký tự & Required, không được rỗng, trim spaces \\
+\hline
+Description & $\leq$500 ký tự & Optional, có thể rỗng \\
+\hline
+Quantity & 0-99,999 & Integer, non-negative, min=0 (out of stock OK) \\
+\hline
+User ID & Must exist & Foreign key, user phải tồn tại trong DB \\
+\hline
+\end{tabular}
+\caption{Validation Rules cho Product}
+\end{table}
+
+\textbf{Flow:}
+\begin{enumerate}
+    \item Frontend validate title, quantity
+    \item API call POST /api/products/\{userId\}
+    \item Backend tìm user: userService.findById()
+    \item Nếu user không tồn tại $\rightarrow$ 404 "User not found"
+    \item Tạo product mới, link với user
+    \item Save vào DB
+    \item Response 201 Created + product object
+\end{enumerate}
+
+\paragraph{B. READ - Xem danh sách sản phẩm}
+
+\textbf{Endpoint:} GET /api/products/\{userId\}
+
+\textbf{Behavior:}
+\begin{itemize}
+    \item Lấy tất cả products của user cụ thể
+    \item Filter by userId
+    \item Return list products hoặc empty list []
+    \item No pagination (cần thêm nếu nhiều products)
+\end{itemize}
+
+\paragraph{C. UPDATE - Cập nhật sản phẩm}
+
+\textbf{Endpoint:} PUT /api/products/\{productId\}
+
+\textbf{Validation:} Same as CREATE (title 3-100, quantity 0-99999)
+
+\textbf{⚠️ SECURITY ISSUE:}
+\begin{itemize}
+    \item Hiện tại KHÔNG kiểm tra ownership
+    \item User A có thể update product của User B
+    \item \textbf{Khuyến nghị:} Thêm check product.user.id == currentUser.id
+\end{itemize}
+
+\paragraph{D. DELETE - Xóa sản phẩm}
+
+\textbf{Endpoint:} DELETE /api/products/\{productId\}
+
+\textbf{⚠️ SECURITY ISSUE:}
+\begin{itemize}
+    \item Hiện tại KHÔNG kiểm tra ownership
+    \item User A có thể xóa product của User B
+    \item \textbf{Khuyến nghị:} Thêm check ownership trước khi xóa
+\end{itemize}
+
+\subsubsection{Danh sách 10 Test Scenarios}
+
+\begin{longtable}{|p{2.2cm}|p{5.5cm}|p{2.5cm}|p{2cm}|}
+\hline
+\textbf{ID} & \textbf{Test Scenario} & \textbf{Category} & \textbf{Priority} \\
+\hline
+\endfirsthead
+\hline
+\textbf{ID} & \textbf{Test Scenario} & \textbf{Category} & \textbf{Priority} \\
+\hline
+\endhead
+TS\_PRODUCT\_01 & Tạo sản phẩm mới thành công & Happy Path & Critical \\
+\hline
+TS\_PRODUCT\_02 & Xem danh sách sản phẩm của user & Happy Path & Critical \\
+\hline
+TS\_PRODUCT\_03 & Cập nhật sản phẩm thành công & Happy Path & Critical \\
+\hline
+TS\_PRODUCT\_04 & Xóa sản phẩm thành công & Happy Path & Critical \\
+\hline
+TS\_PRODUCT\_05 & Tạo sản phẩm với title rỗng & Negative Test & High \\
+\hline
+TS\_PRODUCT\_06 & Tạo sản phẩm với quantity âm & Negative Test & High \\
+\hline
+TS\_PRODUCT\_07 & Tạo với title dưới min (< 3 ký tự) & Boundary Test & High \\
+\hline
+TS\_PRODUCT\_08 & Tạo với title = 3 ký tự (min boundary) & Boundary Test & Medium \\
+\hline
+TS\_PRODUCT\_09 & Tạo với title = 100 ký tự (max boundary) & Boundary Test & Medium \\
+\hline
+TS\_PRODUCT\_10 & Update product của user khác (security) & Security Test & Critical \\
+\hline
+\caption{Danh sách 10 Test Scenarios cho Product}
+\end{longtable}
+
+\subsubsection{Phân loại theo ưu tiên}
+
+\textbf{Critical (5 scenarios - 50\%)}
+\begin{itemize}
+    \item TS\_PRODUCT\_01-04: Core CRUD operations
+    \item TS\_PRODUCT\_10: Security vulnerability
+\end{itemize}
+
+\textbf{High (3 scenarios - 30\%)}
+\begin{itemize}
+    \item TS\_PRODUCT\_05-07: Essential validation
+\end{itemize}
+
+\textbf{Medium (2 scenarios - 20\%)}
+\begin{itemize}
+    \item TS\_PRODUCT\_08-09: Boundary testing
+\end{itemize}
+
+\subsubsection{Thiết kế 5 Test Cases chi tiết}
+
+\paragraph{TC\_PRODUCT\_001: Tạo sản phẩm mới thành công}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{4cm}|p{9cm}|}
+\hline
+\textbf{Field} & \textbf{Details} \\
+\hline
+Test Case ID & TC\_PRODUCT\_001 \\
+\hline
+Priority & Critical \\
+\hline
+Preconditions & User logged in, userId = 1 \\
+\hline
+Test Steps & 
+1. Click "Add Product" \newline
+2. Enter title: "Laptop Dell" \newline
+3. Enter description: "High performance" \newline
+4. Enter quantity: 10 \newline
+5. Click Save \\
+\hline
+Expected Result & 
+• POST /api/products/1 \newline
+• HTTP 201 Created \newline
+• Product added to DB \newline
+• Product appears in list \\
+\hline
+Test Data & 
+Title: "Laptop Dell" \newline
+Description: "High performance" \newline
+Quantity: 10 \\
+\hline
+Actual Result & \textit{(To be filled during execution)} \\
+\hline
+Status & $\square$ Not Run $\square$ Pass $\square$ Fail \\
+\hline
+\end{tabular}
+\caption{TC\_PRODUCT\_001}
+\end{table}
+
+\paragraph{TC\_PRODUCT\_002: Xem danh sách sản phẩm}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{4cm}|p{9cm}|}
+\hline
+\textbf{Field} & \textbf{Details} \\
+\hline
+Test Case ID & TC\_PRODUCT\_002 \\
+\hline
+Priority & Critical \\
+\hline
+Preconditions & User 1 has 3 products in DB \\
+\hline
+Test Steps & 
+1. Navigate to /users/1 \newline
+2. View product list \\
+\hline
+Expected Result & 
+• GET /api/products/1 \newline
+• HTTP 200 \newline
+• Display 3 products \newline
+• Show title, description, quantity for each \\
+\hline
+Test Data & userId: 1 \\
+\hline
+Actual Result & \textit{(To be filled during execution)} \\
+\hline
+Status & $\square$ Not Run $\square$ Pass $\square$ Fail \\
+\hline
+\end{tabular}
+\caption{TC\_PRODUCT\_002}
+\end{table}
+
+\paragraph{TC\_PRODUCT\_003: Tạo với title rỗng}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{4cm}|p{9cm}|}
+\hline
+\textbf{Field} & \textbf{Details} \\
+\hline
+Test Case ID & TC\_PRODUCT\_003 \\
+\hline
+Priority & High \\
+\hline
+Preconditions & User on product page \\
+\hline
+Test Steps & 
+1. Click Add Product \newline
+2. Leave title empty \newline
+3. Enter quantity: 5 \newline
+4. Click Save \\
+\hline
+Expected Result & 
+• Frontend validation error \newline
+• Message: "Title is required" \newline
+• NO API call \newline
+• Product not created \\
+\hline
+Test Data & 
+Title: "" (empty) \newline
+Quantity: 5 \\
+\hline
+Actual Result & \textit{(To be filled during execution)} \\
+\hline
+Status & $\square$ Not Run $\square$ Pass $\square$ Fail \\
+\hline
+\end{tabular}
+\caption{TC\_PRODUCT\_003}
+\end{table}
+
+\paragraph{TC\_PRODUCT\_004: Tạo với quantity âm}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{4cm}|p{9cm}|}
+\hline
+\textbf{Field} & \textbf{Details} \\
+\hline
+Test Case ID & TC\_PRODUCT\_004 \\
+\hline
+Priority & High \\
+\hline
+Preconditions & User on product page \\
+\hline
+Test Steps & 
+1. Enter title: "Mouse" \newline
+2. Enter quantity: -10 \newline
+3. Click Save \\
+\hline
+Expected Result & 
+• Validation error \newline
+• "Quantity must be $\geq$ 0" \newline
+• Product not created \\
+\hline
+Test Data & 
+Title: "Mouse" \newline
+Quantity: -10 \\
+\hline
+Actual Result & \textit{(To be filled during execution)} \\
+\hline
+Status & $\square$ Not Run $\square$ Pass $\square$ Fail \\
+\hline
+\end{tabular}
+\caption{TC\_PRODUCT\_004}
+\end{table}
+
+\paragraph{TC\_PRODUCT\_005: Update product của user khác}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{4cm}|p{9cm}|}
+\hline
+\textbf{Field} & \textbf{Details} \\
+\hline
+Test Case ID & TC\_PRODUCT\_005 \\
+\hline
+Priority & Critical (Security) \\
+\hline
+Preconditions & User 1 logged in, Product ID 99 belongs to User 2 \\
+\hline
+Test Steps & 
+1. User 1 sends PUT /api/products/99 \newline
+2. Update title to "Hacked" \\
+\hline
+Expected Result & 
+\textbf{Current:} HTTP 200, product updated (BUG!) \newline
+\textbf{Expected:} HTTP 403 Forbidden \newline
+• Message: "You don't have permission" \newline
+• Product NOT updated \\
+\hline
+Test Data & 
+productId: 99 (owned by User 2) \newline
+currentUser: User 1 \\
+\hline
+Actual Result & \textit{(To be filled during execution)} \\
+\hline
+Status & $\square$ Not Run $\square$ Pass $\square$ Fail \\
+\hline
+\end{tabular}
+\caption{TC\_PRODUCT\_005}
+\end{table}
+
+\section{Kết luận và khuyến nghị}
+
+\subsection{Tóm tắt}
+
+Đồ án đã hoàn thành phân tích và thiết kế test cases cho 2 chức năng chính:
+
+\begin{enumerate}
+    \item \textbf{Login:} 10 test scenarios + 5 test cases chi tiết
+    \item \textbf{Product Management:} 10 test scenarios + 5 test cases chi tiết
+\end{enumerate}
+
+Tổng cộng 20 scenarios covering happy paths, negative tests, boundary tests, edge cases, và security tests.
+
+\subsection{Các vấn đề phát hiện}
+
+\subsubsection{Vấn đề nghiêm trọng (Critical):}
+
+\begin{enumerate}
+    \item \textbf{UPDATE/DELETE không kiểm tra ownership}
+    \begin{itemize}
+        \item User A có thể sửa/xóa product của User B
+        \item Cần thêm authorization check ngay
+    \end{itemize}
+    
+    \item \textbf{Session management không an toàn}
+    \begin{itemize}
+        \item Lưu user data trực tiếp vào localStorage
+        \item Nên chuyển sang JWT token
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Vấn đề quan trọng (High):}
+
+\begin{enumerate}
+    \setcounter{enumi}{2}
+    \item \textbf{Thiếu pagination}
+    \begin{itemize}
+        \item GET /api/products/\{userId\} trả về toàn bộ products
+        \item Có thể gây performance issue với nhiều products
+    \end{itemize}
+    
+    \item \textbf{Validation chưa đầy đủ}
+    \begin{itemize}
+        \item Frontend và backend validation không đồng bộ
+        \item Cần unified validation rules
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Khuyến nghị cải tiến}
+
+\subsubsection{Ưu tiên 1 (Ngay lập tức):}
+\begin{itemize}
+    \item Thêm ownership check cho UPDATE/DELETE endpoints
+    \item Implement JWT authentication thay localStorage
+    \item Fix security vulnerabilities
+\end{itemize}
+
+\subsubsection{Ưu tiên 2 (Ngắn hạn):}
+\begin{itemize}
+    \item Thêm pagination cho product list
+    \item Unified validation (frontend + backend)
+    \item Thêm rate limiting để prevent brute force
+\end{itemize}
+
+\subsubsection{Ưu tiên 3 (Dài hạn):}
+\begin{itemize}
+    \item Thêm Price và Category fields cho Product
+    \item Implement product search và filter
+    \item Add image upload cho products
+    \item Thêm audit log cho security tracking
+\end{itemize}
+
+\subsection{Test Coverage Summary}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|p{5cm}|}
+\hline
+\textbf{Module} & \textbf{Scenarios} & \textbf{Test Cases} & \textbf{Coverage} \\
+\hline
+Login & 10 & 5 & Happy path + Security + Validation \\
+\hline
+Product & 10 & 5 & CRUD + Security + Boundary \\
+\hline
+\textbf{Total} & \textbf{20} & \textbf{10} & \textbf{Comprehensive} \\
+\hline
+\end{tabular}
+\caption{Test Coverage Summary}
+\end{table}
+
+\end{document}

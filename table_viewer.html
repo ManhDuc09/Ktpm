@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validation Rules - Email</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 30px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        table td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            vertical-align: top;
+        }
+        
+        table tbody tr {
+            transition: background 0.3s;
+        }
+        
+        table tbody tr:hover {
+            background: #f5f5f5;
+        }
+        
+        table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .col-tieuchi {
+            font-weight: bold;
+            color: #495057;
+            width: 20%;
+        }
+        
+        .col-yeucau {
+            color: #667eea;
+            font-weight: 600;
+            width: 25%;
+        }
+        
+        .col-mota {
+            color: #212529;
+            width: 55%;
+            line-height: 1.6;
+        }
+        
+        code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #d63384;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .caption {
+            text-align: center;
+            font-style: italic;
+            color: #6c757d;
+            margin-top: 10px;
+            font-size: 0.95em;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📧 Validation Rules cho Email</h1>
+        
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tiêu chí</th>
+                        <th>Yêu cầu</th>
+                        <th>Mô tả chi tiết</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="col-tieuchi">Định dạng</td>
+                        <td class="col-yeucau">Email hợp lệ</td>
+                        <td class="col-mota">Phải tuân thủ format email chuẩn (RFC 5322): <code>local@domain.ext</code></td>
+                    </tr>
+                    <tr>
+                        <td class="col-tieuchi">Độ dài</td>
+                        <td class="col-yeucau">3-50 ký tự</td>
+                        <td class="col-mota">
+                            <strong>Min:</strong> 3 ký tự (<code>a@b.c</code>)<br>
+                            <strong>Max:</strong> 50 ký tự
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-tieuchi">Ký tự cho phép</td>
+                        <td class="col-yeucau">a-z, A-Z, 0-9, -, ., _</td>
+                        <td class="col-mota">Local part: chữ cái, số, dấu chấm, gạch ngang, gạch dưới</td>
+                    </tr>
+                    <tr>
+                        <td class="col-tieuchi">Bắt buộc</td>
+                        <td class="col-yeucau">Required</td>
+                        <td class="col-mota">Không được để trống hoặc <code>null</code></td>
+                    </tr>
+                    <tr>
+                        <td class="col-tieuchi">Case sensitivity</td>
+                        <td class="col-yeucau">Case-insensitive</td>
+                        <td class="col-mota">
+                            <code>Test@mail.com</code> = <code>test@mail.com</code>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="caption">Bảng 1: Validation Rules cho Email (Username)</div>
+        </div>
+
+        <h1 style="margin-top: 60px;">🔐 Validation Rules cho Password</h1>
+        
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tiêu chí</th>
+                        <th>Yêu cầu</th>
+                        <th>Mô tả chi tiết</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="col-tieuchi">Độ dài</td>
+                        <td class="col-yeucau">6-100 ký tự</td>
+                        <td class="col-mota">
+                            <strong>Min:</strong> 6 ký tự (password tối thiểu)<br>
+                            <strong>Max:</strong> 100 ký tự
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-tieuchi">Thành phần</td>
+                        <td class="col-yeucau">Phải có chữ và số</td>
+                        <td class="col-mota">
+                            • Ít nhất 1 chữ cái (a-z hoặc A-Z)<br>
+                            • Ít nhất 1 chữ số (0-9)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-tieuchi">Bắt buộc</td>
+                        <td class="col-yeucau">Required</td>
+                        <td class="col-mota">Không được để trống hoặc <code>null</code></td>
+                    </tr>
+                    <tr>
+                        <td class="col-tieuchi">Mã hóa</td>
+                        <td class="col-yeucau">BCrypt</td>
+                        <td class="col-mota">Hash password trước khi lưu vào DB</td>
+                    </tr>
+                    <tr>
+                        <td class="col-tieuchi">Case sensitivity</td>
+                        <td class="col-yeucau">Case-sensitive</td>
+                        <td class="col-mota">
+                            <code>Password123</code> ≠ <code>password123</code>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="caption">Bảng 2: Validation Rules cho Password</div>
+        </div>
+    </div>
+</body>
+</html>
