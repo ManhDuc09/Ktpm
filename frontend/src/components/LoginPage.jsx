@@ -136,7 +136,7 @@ function LoginPage() {
                         />
                         {loginError && <p data-testid="login-error" className="error-message">{loginError}</p>}
 
-                        <button type="submit">Sign In</button>
+                        <button type="submit" data-testid="login-button">Sign In</button>
                     </form>
                 </div>
 
