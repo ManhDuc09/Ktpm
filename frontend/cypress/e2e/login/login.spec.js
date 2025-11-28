@@ -1,6 +1,4 @@
 describe('Login Page', () => {
-
-
     const testEmail = 'admin@example.com';
     const testPassword = 'duc123';
 
@@ -26,11 +24,16 @@ describe('Login Page', () => {
         cy.visit('http://localhost:5173');
     });
 
-    it('should show validation messages for empty fields', () => {
+    it('should show validation for empty email', () => {
         cy.get('button[type="submit"]').contains('Sign In').click();
-        cy.get('[data-testid="login-error"]').should('contain', 'Both email and password are required!');
-
+        cy.get('[data-testid="login-error"]').should('contain', 'Email is required');
     });
+    it('should show validation for empty password', () => {
+        cy.get('[data-testid="login-email"]').type('test@example.com');
+        cy.get('button[type="submit"]').contains('Sign In').click();
+        cy.get('[data-testid="login-error"]').should('contain', 'Password is required');
+    });
+
 
 
     it('should login successfully with valid credentials', () => {

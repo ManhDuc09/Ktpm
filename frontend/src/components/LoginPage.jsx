@@ -30,68 +30,54 @@ function LoginPage() {
     };
 
 
+    const validateRegister = (data) => {
+        if (!data.name) return "Name is required";
+        if (!data.email) return "Email is required";
+        if (!/^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$/.test(data.email)) return "Invalid email format";
+        if (!data.password) return "Password is required";
+        if (data.password.length < 6) return "Password must be at least 6 characters";
+        return null;
+    };
+
+    const validateLogin = (data) => {
+        if (!data.email) return "Email is required";
+        if (!/^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$/.test(data.email)) return "Invalid email format";
+        if (!data.password) return "Password is required";
+        return null;
+    };
+
 
     const handleLogin = async (e) => {
         e.preventDefault();
-
-        if (!loginData.email || !loginData.password) {
-            setLoginError("Both email and password are required!");
+        const error = validateLogin(loginData);
+        if (error) {
+            setLoginError(error);
             return;
         }
-
         try {
             const response = await login(loginData);
-
             localStorage.setItem("user", JSON.stringify(response.data));
-
             navigate(`/users/${response.data.id}`);
         } catch (err) {
-            if (err.response) {
-                if (err.response.status === 401) {
-                    setLoginError("Invalid email or password!");
-                } else {
-                    setLoginError("Login failed: " + (err.response.data || "Unknown error"));
-                }
-            } else {
-                setLoginError("Network error");
-            }
+            if (err.response?.status === 401) setLoginError("Invalid email or password!");
+            else setLoginError("Login failed: " + (err.response?.data || "Unknown error"));
         }
     };
     const handleRegister = async (e) => {
         e.preventDefault();
-        if (!registerData.name || !registerData.email || !registerData.password) {
-            setRegisterError("All fields are required!");
+        const error = validateRegister(registerData);
+        if (error) {
+            setRegisterError(error);
             return;
         }
-
-
-
-        if (registerData.password.length < 6) {
-            setRegisterError("Password must be at least 6 characters!");
-            return;
-        }
-
         try {
             const response = await register(registerData);
             localStorage.setItem("user", JSON.stringify(response.data));
-
-            setLoginError("Registration successful!");
             navigate(`/users/${response.data.id}`);
-            console.log("User registered:", response.data);
-
             setRightPanelActive(false);
         } catch (err) {
-            if (err.response) {
-                if (err.response.status === 409) {
-                    setRegisterError("Registration failed: " + err.response.data);
-                } else {
-                    setRegisterError("Registration failed: " + (err.response.data || "Unknown error"));
-                }
-            } else {
-                setRegisterError("Network error");
-            }
+            setRegisterError(err.response?.data || "Registration failed");
         }
-
     };
     const handleSignUp = () => setRightPanelActive(true);
     const handleSignIn = () => setRightPanelActive(false);
