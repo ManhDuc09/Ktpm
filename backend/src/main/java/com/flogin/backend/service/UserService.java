@@ -15,9 +15,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.passwordEncoder = new BCryptPasswordEncoder();
+        this.passwordEncoder = passwordEncoder;
     }
 
     public UserResponse register(UserDTO dto) {
@@ -41,17 +41,18 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public Optional<User> login(String email, String rawPassword) {
-        Optional<User> userOpt = userRepository.findByEmail(email);
 
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            if (passwordEncoder.matches(rawPassword, user.getPassword())) {
-                return Optional.of(user);
-            }
+    public User login(String email, String rawPassword) {
+        if (email == null || email.isBlank()) throw new IllegalArgumentException("Email is required");
+        if (rawPassword == null || rawPassword.isBlank()) throw new IllegalArgumentException("Password is required");
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Incorrect email or password"));
+
+        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Incorrect email or password");
         }
-
-        return Optional.empty();
+        return user;
     }
 
 }
