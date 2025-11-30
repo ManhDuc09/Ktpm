@@ -4,8 +4,11 @@ import com.flogin.backend.dto.UserDTO;
 import com.flogin.backend.dto.UserResponse;
 import com.flogin.backend.entity.User;
 import com.flogin.backend.service.UserService;
+
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -28,9 +31,23 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<User> login(@RequestBody UserDTO dto) {
-        return userService.login(dto.getEmail(), dto.getPassword())
-                .map(user -> ResponseEntity.ok(user))
-                .orElseGet(() -> ResponseEntity.status(401).build());
+    public ResponseEntity<?> login(@RequestBody UserDTO dto) {
+        if (dto.getEmail() == null || dto.getEmail().isBlank()) {
+            return ResponseEntity.badRequest()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Map.of("message", "Email is required"));
+        }
+        if (dto.getPassword() == null || dto.getPassword().isBlank()) {
+            return ResponseEntity.badRequest()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Map.of("message", "Password is required"));
+        }
+
+        try {
+            User user = userService.login(dto.getEmail(), dto.getPassword());
+            return ResponseEntity.ok(new UserResponse(user));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(401).build();
+        }
     }
 }

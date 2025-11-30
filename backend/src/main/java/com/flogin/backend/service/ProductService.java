@@ -30,6 +30,10 @@ public class ProductService {
         return productRepository.findByUser(user);
     }
 
+    public java.util.Optional<Product> findById(Long id) {
+        return productRepository.findById(id);
+    }
+
     public Product updateProduct(Long id, ProductDTO dto) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
