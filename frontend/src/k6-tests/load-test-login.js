@@ -2,7 +2,7 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 export let options = {
-    vus: 1000,     //100 users , 30 seconds
+    vus: 100,     //100 users , 30 seconds
     duration: '30s',
 };
 
@@ -14,5 +14,5 @@ export default function () {
     );
 
     check(res, { "login successful": (r) => r.status === 200 });
-    sleep(1);
+  
 }

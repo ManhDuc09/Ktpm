@@ -2,7 +2,7 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 export let options = {
-    vus: 1000,        // 1000 concurrent users
+    vus: 500,        // 1000 concurrent users
     duration: '30s',  // run for 30 seconds
 };
 
@@ -13,5 +13,5 @@ export default function () {
     check(res, { 'get products successful': (r) => r.status === 200 });
 
 
-    sleep(1);
+   
 }

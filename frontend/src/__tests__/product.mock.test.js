@@ -23,7 +23,7 @@ describe("UserPage Mock Tests", () => {
 
     test("Mock: fetch products successfully", async () => {
         ProductService.getProducts.mockResolvedValue({ data: mockProducts });
-        console.log(UserPage);
+       
 
         render(
             <Router>
@@ -118,6 +118,9 @@ describe("UserPage Mock Tests", () => {
     });
 
     test("Mock: fetch products failure", async () => {
+    // Suppress console.error during this test
+        jest.spyOn(console, "error").mockImplementation(() => {});
+
         ProductService.getProducts.mockRejectedValue(new Error("Network Error"));
 
         render(
@@ -129,5 +132,9 @@ describe("UserPage Mock Tests", () => {
         await waitFor(() => {
             expect(ProductService.getProducts).toHaveBeenCalledWith("123");
         });
+
+        // Restore console.error after test
+        console.error.mockRestore();
     });
+
 });

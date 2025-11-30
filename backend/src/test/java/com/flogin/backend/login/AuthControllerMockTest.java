@@ -86,10 +86,6 @@ class AuthControllerMockTest {
     }
 
 
-
-    // ---------------------------------------------------------
-    // 3. LOGIN
-    // ---------------------------------------------------------
     @Test
     void testLoginSuccess() throws Exception {
         User user = new User();

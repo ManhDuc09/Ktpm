@@ -6,6 +6,7 @@ import com.flogin.backend.entity.User;
 import com.flogin.backend.exception.ResourceNotFoundException;
 import com.flogin.backend.repository.ProductRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.HtmlUtils; // import sanitize
 
 import java.util.List;
 
@@ -19,8 +20,8 @@ public class ProductService {
 
     public Product createProduct(ProductDTO dto, User user) {
         Product product = new Product();
-        product.setTitle(dto.getTitle());
-        product.setDescription(dto.getDescription());
+        product.setTitle(HtmlUtils.htmlEscape(dto.getTitle()));        
+        product.setDescription(HtmlUtils.htmlEscape(dto.getDescription())); 
         product.setQuantity(dto.getQuantity());
         product.setUser(user);
         return productRepository.save(product);
@@ -33,9 +34,11 @@ public class ProductService {
     public Product updateProduct(Long id, ProductDTO dto) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
-        product.setTitle(dto.getTitle());
-        product.setDescription(dto.getDescription());
+
+        product.setTitle(HtmlUtils.htmlEscape(dto.getTitle()));          
+        product.setDescription(HtmlUtils.htmlEscape(dto.getDescription())); 
         product.setQuantity(dto.getQuantity());
+
         return productRepository.save(product);
     }
 

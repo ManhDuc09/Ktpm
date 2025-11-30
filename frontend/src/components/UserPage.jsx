@@ -163,7 +163,7 @@ const UserPage = () => {
                             value={modalData.description}
                             onChange={handleChange}
                             className="form-control my-2"
-                            data-testid="product-description"
+                            data-testid="product-price"
                         />
                         <input
                             type="number"
