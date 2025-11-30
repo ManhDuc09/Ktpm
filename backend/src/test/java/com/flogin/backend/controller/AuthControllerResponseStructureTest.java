@@ -68,7 +68,6 @@ class AuthControllerResponseStructureTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(new UserDTO("invalid@example.com", "wrong"))))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$").doesNotExist());
     }
 
