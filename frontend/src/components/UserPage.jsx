@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import * as ProductService from "../services/ProductService"; // Use ProductService
 import "./UserPage.css";
 
 const UserPage = () => {
@@ -9,19 +9,21 @@ const UserPage = () => {
     const [modalData, setModalData] = useState({ id: null, title: "", description: "", quantity: 0 });
     const [isEdit, setIsEdit] = useState(false);
     const [showModal, setShowModal] = useState(false);
-    const [toast, setToast] = useState({ show: false, message: "" }); // toast state
+    const [toast, setToast] = useState({ show: false, message: "" });
 
+    // Fetch products on mount
     useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8080/api/products/${id}`);
-                setProducts(response.data);
-            } catch (error) {
-                console.error("Error fetching products:", error);
-            }
-        };
         if (id) fetchProducts();
     }, [id]);
+
+    const fetchProducts = async () => {
+        try {
+            const response = await ProductService.getProducts(id);
+            setProducts(response.data);
+        } catch (error) {
+            console.error("Error fetching products:", error);
+        }
+    };
 
     const showToast = (message) => {
         setToast({ show: true, message });
@@ -48,12 +50,13 @@ const UserPage = () => {
 
     const handleSave = async () => {
         try {
+            let response;
             if (isEdit) {
-                const response = await axios.put(`http://localhost:8080/api/products/${modalData.id}`, modalData);
+                response = await ProductService.updateProduct(modalData.id, modalData);
                 setProducts(products.map(p => (p.id === modalData.id ? response.data : p)));
                 showToast("Product updated successfully!");
             } else {
-                const response = await axios.post(`http://localhost:8080/api/products/${id}`, modalData);
+                response = await ProductService.createProduct(id, modalData);
                 setProducts([...products, response.data]);
                 showToast("Product created successfully!");
             }
@@ -67,7 +70,7 @@ const UserPage = () => {
     const handleDelete = async (productId) => {
         if (!window.confirm("Are you sure?")) return;
         try {
-            await axios.delete(`http://localhost:8080/api/products/${productId}`);
+            await ProductService.deleteProduct(productId);
             setProducts(products.filter(p => p.id !== productId));
             showToast("Product deleted successfully!");
         } catch (error) {
@@ -88,7 +91,6 @@ const UserPage = () => {
                 <button className="btn btn-danger" onClick={handleLogout}>Logout</button>
             </header>
 
-            {/* Toast notification */}
             {toast.show && (
                 <div data-testid="success-message" className="toast-notification">
                     {toast.message}
@@ -116,8 +118,20 @@ const UserPage = () => {
                                 <td>{p.description}</td>
                                 <td>{p.quantity}</td>
                                 <td>
-                                    <button className="btn btn-sm btn-warning me-2" data-testid="edit-btn" onClick={() => openEditModal(p)}>Edit</button>
-                                    <button className="btn btn-sm btn-danger" data-testid="delete-btn" onClick={() => handleDelete(p.id)}>Delete</button>
+                                    <button
+                                        className="btn btn-sm btn-warning me-2"
+                                        data-testid="edit-btn"
+                                        onClick={() => openEditModal(p)}
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        className="btn btn-sm btn-danger"
+                                        data-testid="delete-btn"
+                                        onClick={() => handleDelete(p.id)}
+                                    >
+                                        Delete
+                                    </button>
                                 </td>
                             </tr>
                         ))
@@ -133,9 +147,33 @@ const UserPage = () => {
                 <div className="modal-backdrop">
                     <div className="modal-content p-3">
                         <h5>{isEdit ? "Edit Product" : "Add Product"}</h5>
-                        <input type="text" name="title" placeholder="Title" value={modalData.title} onChange={handleChange} className="form-control my-2" data-testid="product-name" />
-                        <input type="text" name="description" placeholder="Description" value={modalData.description} onChange={handleChange} className="form-control my-2" data-testid="product-price" />
-                        <input type="number" name="quantity" placeholder="Quantity" value={modalData.quantity} onChange={handleChange} className="form-control my-2" data-testid="product-quantity" />
+                        <input
+                            type="text"
+                            name="title"
+                            placeholder="Title"
+                            value={modalData.title}
+                            onChange={handleChange}
+                            className="form-control my-2"
+                            data-testid="product-name"
+                        />
+                        <input
+                            type="text"
+                            name="description"
+                            placeholder="Description"
+                            value={modalData.description}
+                            onChange={handleChange}
+                            className="form-control my-2"
+                            data-testid="product-description"
+                        />
+                        <input
+                            type="number"
+                            name="quantity"
+                            placeholder="Quantity"
+                            value={modalData.quantity}
+                            onChange={handleChange}
+                            className="form-control my-2"
+                            data-testid="product-quantity"
+                        />
                         <div className="d-flex justify-content-end mt-2">
                             <button className="btn btn-secondary me-2" onClick={closeModal}>Cancel</button>
                             <button className="btn btn-primary" onClick={handleSave} data-testid="submit-btn">Save</button>

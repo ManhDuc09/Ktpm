@@ -23,7 +23,6 @@ public class ProductController {
         this.userService = userService;
     }
 
-    // CREATE a new product for a user
     @PostMapping("/{userId}")
     public ResponseEntity<Product> createProduct(@PathVariable Long userId, @RequestBody ProductDTO dto) {
         User user = userService.findById(userId)
