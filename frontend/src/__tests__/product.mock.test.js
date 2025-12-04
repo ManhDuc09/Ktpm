@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import UserPage from "../components/UserPage";
 import * as ProductService from "../services/ProductService";
 import { BrowserRouter as Router } from "react-router-dom";
@@ -23,13 +23,14 @@ describe("UserPage Mock Tests", () => {
 
     test("Mock: fetch products successfully", async () => {
         ProductService.getProducts.mockResolvedValue({ data: mockProducts });
-       
 
-        render(
-            <Router>
-                <UserPage />
-            </Router>
-        );
+        await act(async () => {
+            render(
+                <Router>
+                    <UserPage />
+                </Router>
+            );
+        });
 
         await waitFor(() => {
             const items = screen.getAllByTestId("product-item");
@@ -43,26 +44,30 @@ describe("UserPage Mock Tests", () => {
         const newProduct = { id: 3, title: "Product C", description: "Desc C", quantity: 15 };
         ProductService.createProduct.mockResolvedValue({ data: newProduct });
 
-        render(
-            <Router>
-                <UserPage />
-            </Router>
-        );
+        await act(async () => {
+            render(
+                <Router>
+                    <UserPage />
+                </Router>
+            );
+        });
 
         // Open modal
         fireEvent.click(screen.getByTestId("add-product-btn"));
+
         fireEvent.change(screen.getByTestId("product-name"), { target: { value: newProduct.title } });
         fireEvent.change(screen.getByTestId("product-description"), { target: { value: newProduct.description } });
-        fireEvent.change(screen.getByTestId("product-quantity"), { target: { value: newProduct.quantity } });
+        fireEvent.change(screen.getByTestId("product-quantity"), { target: { value: newProduct.quantity.toString() } });
+
         fireEvent.click(screen.getByTestId("submit-btn"));
 
         await waitFor(() => {
             expect(ProductService.createProduct).toHaveBeenCalledWith(
                 "123",
                 expect.objectContaining({
-                    title: "Product C",
-                    description: "Desc C",
-                    quantity: "15",
+                    title: newProduct.title,
+                    description: newProduct.description,
+                    quantity: newProduct.quantity.toString(),
                 })
             );
             expect(screen.getByText(/Product created successfully/i)).toBeInTheDocument();
@@ -74,11 +79,13 @@ describe("UserPage Mock Tests", () => {
         const updatedProduct = { ...mockProducts[0], title: "Updated A" };
         ProductService.updateProduct.mockResolvedValue({ data: updatedProduct });
 
-        render(
-            <Router>
-                <UserPage />
-            </Router>
-        );
+        await act(async () => {
+            render(
+                <Router>
+                    <UserPage />
+                </Router>
+            );
+        });
 
         await waitFor(() => expect(screen.getAllByTestId("product-item").length).toBe(1));
 
@@ -101,11 +108,13 @@ describe("UserPage Mock Tests", () => {
 
         window.confirm = jest.fn(() => true);
 
-        render(
-            <Router>
-                <UserPage />
-            </Router>
-        );
+        await act(async () => {
+            render(
+                <Router>
+                    <UserPage />
+                </Router>
+            );
+        });
 
         await waitFor(() => expect(screen.getAllByTestId("product-item").length).toBe(1));
 
@@ -118,23 +127,22 @@ describe("UserPage Mock Tests", () => {
     });
 
     test("Mock: fetch products failure", async () => {
-    // Suppress console.error during this test
-        jest.spyOn(console, "error").mockImplementation(() => {});
+        jest.spyOn(console, "error").mockImplementation(() => { });
 
         ProductService.getProducts.mockRejectedValue(new Error("Network Error"));
 
-        render(
-            <Router>
-                <UserPage />
-            </Router>
-        );
+        await act(async () => {
+            render(
+                <Router>
+                    <UserPage />
+                </Router>
+            );
+        });
 
         await waitFor(() => {
             expect(ProductService.getProducts).toHaveBeenCalledWith("123");
         });
 
-        // Restore console.error after test
         console.error.mockRestore();
     });
-
 });
