@@ -5,7 +5,10 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   test: {
-    globals: true,
-    environment: "jsdom",
+    environment: 'jsdom', // bắt buộc nếu test component React
+    globals: true,         // để dùng describe/test mà không import
+    setupFiles: ['./setupTests.js'], // optional, import jest-dom
+    include: ['src/**/*.test.{js,jsx}'], // tìm đúng file test
+    reporters: 'verbose',
   },
-});
+})

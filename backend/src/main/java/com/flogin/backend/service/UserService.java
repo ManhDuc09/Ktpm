@@ -65,26 +65,19 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public Optional<User> login(String email, String rawPassword) {
-        if (email == null || email.isBlank()) {
+    public User login(String email, String rawPassword) {
+        if (email == null || email.isBlank())
             throw new IllegalArgumentException("Email is required");
-        }
-        if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-            throw new IllegalArgumentException("Invalid email format");
-        }
-        if (rawPassword == null || rawPassword.isBlank()) {
+        if (rawPassword == null || rawPassword.isBlank())
             throw new IllegalArgumentException("Password is required");
-        }
 
-        Optional<User> userOpt = userRepository.findByEmail(email);
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            if (passwordEncoder.matches(rawPassword, user.getPassword())) {
-                return Optional.of(user);
-            }
-        }
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Incorrect email or password"));
 
-        return Optional.empty();
+        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Incorrect email or password");
+        }
+        return user;
     }
 
 }

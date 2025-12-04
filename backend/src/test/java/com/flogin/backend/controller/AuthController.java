@@ -1,16 +1,16 @@
 package com.flogin.backend.controller;
 
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.flogin.backend.dto.UserDTO;
 import com.flogin.backend.dto.UserResponse;
 import com.flogin.backend.entity.User;
 import com.flogin.backend.service.UserService;
 
 import org.springframework.http.MediaType;
-
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.Map;
 import java.util.Map;
 
 @RestController
@@ -47,11 +47,11 @@ public class AuthController {
         }
 
         try {
-            User user = userService.login(dto.getEmail(), dto.getPassword())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
+            User user = userService.login(dto.getEmail(), dto.getPassword());
             return ResponseEntity.ok(new UserResponse(user));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(401).build();
         }
     }
+
 }

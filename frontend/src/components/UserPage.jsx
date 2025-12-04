@@ -6,7 +6,7 @@ import "./UserPage.css";
 const UserPage = () => {
     const { id } = useParams();
     const [products, setProducts] = useState([]);
-    const [modalData, setModalData] = useState({ id: null, title: "", description: "", quantity: 0 });
+    const [modalData, setModalData] = useState({ id: null, title: "", description: "", quantity: "0" });
     const [isEdit, setIsEdit] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [toast, setToast] = useState({ show: false, message: "" });
@@ -32,31 +32,36 @@ const UserPage = () => {
 
     const openCreateModal = () => {
         setIsEdit(false);
-        setModalData({ id: null, title: "", description: "", quantity: 0 });
+        setModalData({ id: null, title: "", description: "", quantity: "0" });
         setShowModal(true);
     };
 
     const openEditModal = (product) => {
+        setModalData({
+            id: product.id,
+            title: product.title,
+            description: product.description,
+            quantity: product.quantity.toString()
+        });
         setIsEdit(true);
-        setModalData(product);
         setShowModal(true);
     };
 
     const closeModal = () => setShowModal(false);
 
+    // Keep ALL modal fields as string (HTML input rule)
     const handleChange = (e) => {
         setModalData({ ...modalData, [e.target.name]: e.target.value });
     };
 
     const handleSave = async () => {
         try {
-            let response;
             if (isEdit) {
-                response = await ProductService.updateProduct(modalData.id, modalData);
+                const response = await axios.put(`http://localhost:8080/api/products/${modalData.id}`, modalData);
                 setProducts(products.map(p => (p.id === modalData.id ? response.data : p)));
                 showToast("Product updated successfully!");
             } else {
-                response = await ProductService.createProduct(id, modalData);
+                const response = await axios.post(`http://localhost:8080/api/products/${id}`, modalData);
                 setProducts([...products, response.data]);
                 showToast("Product created successfully!");
             }
@@ -147,33 +152,9 @@ const UserPage = () => {
                 <div className="modal-backdrop">
                     <div className="modal-content p-3">
                         <h5>{isEdit ? "Edit Product" : "Add Product"}</h5>
-                        <input
-                            type="text"
-                            name="title"
-                            placeholder="Title"
-                            value={modalData.title}
-                            onChange={handleChange}
-                            className="form-control my-2"
-                            data-testid="product-name"
-                        />
-                        <input
-                            type="text"
-                            name="description"
-                            placeholder="Description"
-                            value={modalData.description}
-                            onChange={handleChange}
-                            className="form-control my-2"
-                            data-testid="product-description"
-                        />
-                        <input
-                            type="number"
-                            name="quantity"
-                            placeholder="Quantity"
-                            value={modalData.quantity}
-                            onChange={handleChange}
-                            className="form-control my-2"
-                            data-testid="product-quantity"
-                        />
+                        <input type="text" name="title" placeholder="Title" value={modalData.title} onChange={handleChange} className="form-control my-2" data-testid="product-name" />
+                        <input type="text" name="description" placeholder="Description" value={modalData.description} onChange={handleChange} className="form-control my-2" data-testid="product-price" />
+                        <input type="number" name="quantity" placeholder="Quantity" value={modalData.quantity} onChange={handleChange} className="form-control my-2" data-testid="product-quantity" />
                         <div className="d-flex justify-content-end mt-2">
                             <button className="btn btn-secondary me-2" onClick={closeModal}>Cancel</button>
                             <button className="btn btn-primary" onClick={handleSave} data-testid="submit-btn">Save</button>
