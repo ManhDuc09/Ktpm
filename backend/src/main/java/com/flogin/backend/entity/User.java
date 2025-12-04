@@ -59,11 +59,4 @@ public class User {
     @JsonIgnore
     private List<Product> products;
 
-    public List<Product> getProducts() {
-        return this.products;
-    }
-
-    public void setProducts(List<Product> products) {
-        this.products = products;
-    }
 }

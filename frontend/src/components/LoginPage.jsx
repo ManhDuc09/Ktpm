@@ -130,7 +130,7 @@ function LoginPage() {
               </p>
             )}
 
-            <button type="submit">Sign Up</button>
+            <button type="submit" data-testid="register-submit">Sign Up</button>
           </form>
         </div>
 
@@ -167,26 +167,17 @@ function LoginPage() {
           </form>
         </div>
 
-        {/* OVERLAY */}
         <div className="overlay-container">
-          <div
-            className={`overlay ${rightPanelActive ? "right-panel-active" : ""
-              }`}>
+          <div className={`overlay ${rightPanelActive ? "right-panel-active" : ""}`}>
             <div className="overlay-panel overlay-left">
               <h1>Welcome Back!</h1>
-              <p>
-                To keep connected with us please login with your personal info
-              </p>
-              <button className="ghost" onClick={handleSignIn}>
-                Sign In
-              </button>
+              <p>To keep connected with us please login with your personal info</p>
+              <button className="ghost" onClick={handleSignIn} data-testid="toggle-signin">Sign In</button>
             </div>
             <div className="overlay-panel overlay-right">
               <h1>Hello, Friend!</h1>
               <p>Enter your personal details and start journey with us</p>
-              <button className="ghost" onClick={handleSignUp}>
-                Sign Up
-              </button>
+              <button className="ghost" onClick={handleSignUp} data-testid="toggle-signup">Sign Up</button>
             </div>
           </div>
         </div>

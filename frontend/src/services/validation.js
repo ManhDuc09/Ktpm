@@ -33,6 +33,7 @@ export function validatePassword(password) {
   return { valid: true };
 }
 
+
 export function validateEmail(email) {
   if (!email || email.trim() === "") {
     return { valid: false, message: "Email không được để trống" };
@@ -44,4 +45,3 @@ export function validateEmail(email) {
 
   return { valid: true, message: "" };
 }
-

@@ -40,18 +40,21 @@ export default function ProductForm({ onSubmit }) {
         value={product.price}
         onChange={handleChange}
         placeholder="Giá"
+        data-testid="product-price"
       />
       <input
         name="quantity"
         value={product.quantity}
         onChange={handleChange}
         placeholder="Số lượng"
+        data-testid="product-quantity"
       />
       <input
         name="description"
         value={product.description}
         onChange={handleChange}
         placeholder="Mô tả"
+        data-testid="product-description"
       />
       <input
         name="category"

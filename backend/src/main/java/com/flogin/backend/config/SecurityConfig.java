@@ -3,8 +3,15 @@ package com.flogin.backend.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -19,7 +26,7 @@ public class SecurityConfig {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
@@ -41,8 +48,6 @@ public class SecurityConfig {
         return new org.springframework.web.filter.CorsFilter(corsConfigurationSource());
     }
 
-
-
     // -------------------------------
     // SECURITY FILTER CHAIN CHUẨN
     // -------------------------------
@@ -50,25 +55,26 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-            // BẬT CORS: Sử dụng cấu hình từ corsConfigurationSource()
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                // BẬT CORS: Sử dụng cấu hình từ corsConfigurationSource()
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-            // TẮT CSRF vì bạn đang làm API
-            .csrf(csrf -> csrf.disable())
+                // TẮT CSRF vì bạn đang làm API
+                .csrf(csrf -> csrf.disable())
 
-            // HEADER BẢO MẬT
-            .headers(headers -> headers
-                .cacheControl(cache -> {})      // Cache-Control
-                .contentTypeOptions(cto -> {})  // X-Content-Type-Options: nosniff
-            )
+                // HEADER BẢO MẬT
+                .headers(headers -> headers
+                        .cacheControl(cache -> {
+                        }) // Cache-Control
+                        .contentTypeOptions(cto -> {
+                        }) // X-Content-Type-Options: nosniff
+                )
 
-            // CHO PHÉP TẤT CẢ OPTIONS (preflight)
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .anyRequest().permitAll()
-            );
+                // CHO PHÉP TẤT CẢ OPTIONS (preflight)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .anyRequest().permitAll());
 
         return http.build();
     }
-    
+
 }
