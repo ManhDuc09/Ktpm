@@ -47,11 +47,12 @@ public class AuthController {
         }
 
         try {
-            User user = userService.login(dto.getEmail(), dto.getPassword())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
+            User user = userService.login(dto.getEmail(), dto.getPassword());
             return ResponseEntity.ok(new UserResponse(user));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(401).build();
+            return ResponseEntity.status(401)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Map.of("message", "Invalid credentials"));
         }
     }
 }
