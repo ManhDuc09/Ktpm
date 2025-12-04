@@ -50,4 +50,11 @@ public class ProductController {
         productService.deleteProduct(productId);
         return ResponseEntity.ok("Product deleted successfully");
     }
+
+    @GetMapping("/item/{productId}")
+    public ResponseEntity<Product> getProductById(@PathVariable Long productId) {
+        Product product = productService.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+        return ResponseEntity.ok(product);
+    }
 }

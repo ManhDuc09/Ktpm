@@ -47,6 +47,8 @@ spring.jpa.properties.hibernate.format_sql=true
 Run the Spring Boot application:
 
 
+Note: this project has been upgraded to Java 21 (LTS). Please install Java 21 and use it when building or running the backend.
+
 <pre> mvn spring-boot:run </pre>
 
 
