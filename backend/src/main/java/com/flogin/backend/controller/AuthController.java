@@ -47,8 +47,7 @@ public class AuthController {
         }
 
         try {
-            User user = userService.login(dto.getEmail(), dto.getPassword())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
+            User user = userService.login(dto.getEmail(), dto.getPassword());
             return ResponseEntity.ok(new UserResponse(user));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(401).build();
