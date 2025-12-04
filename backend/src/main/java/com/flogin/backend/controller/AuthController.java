@@ -44,7 +44,8 @@ public class AuthController {
         }
 
         try {
-            User user = userService.login(dto.getEmail(), dto.getPassword());
+            User user = userService.login(dto.getEmail(), dto.getPassword())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
             return ResponseEntity.ok(new UserResponse(user));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(401).build();
