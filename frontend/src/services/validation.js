@@ -33,15 +33,15 @@ export function validatePassword(password) {
   return { valid: true };
 }
 
-// // src/services/validation.js (email)
-// export function validateEmail(email) {
-//   if (!email || email.trim() === "") {
-//     return { valid: false, message: "Email không được để trống" };
-//   }
+export function validateEmail(email) {
+  if (!email || email.trim() === "") {
+    return { valid: false, message: "Email không được để trống" };
+  }
 
-//   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-//     return { valid: false, message: "Email không hợp lệ" };
-//   }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { valid: false, message: "Email không hợp lệ" };
+  }
 
-//   return { valid: true, message: "" };
-// }
+  return { valid: true, message: "" };
+}
+
