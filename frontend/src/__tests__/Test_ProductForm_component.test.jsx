@@ -1,9 +1,8 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import axios from 'axios';
 import UserPage from '../components/UserPage';
 
-// Mock axios with Jest
 jest.mock('axios');
 
 describe('UserPage CRUD behavior', () => {
@@ -24,12 +23,10 @@ describe('UserPage CRUD behavior', () => {
 
     test('IT-PD-TC-B1: Create product', async () => {
         axios.get.mockResolvedValue({ data: [] });
-
         const mockNewProduct = { id: 2, title: 'New Product', description: 'New Desc', quantity: 5 };
         axios.post.mockResolvedValue({ data: mockNewProduct });
 
         renderWithRouter();
-
         fireEvent.click(screen.getByTestId('add-product-btn'));
 
         const nameInput = await screen.findByTestId('product-name');
@@ -54,7 +51,6 @@ describe('UserPage CRUD behavior', () => {
         axios.put.mockResolvedValue({ data: mockUpdated });
 
         renderWithRouter();
-
         const editBtn = await screen.findByTestId('edit-btn');
         fireEvent.click(editBtn);
 
@@ -74,12 +70,11 @@ describe('UserPage CRUD behavior', () => {
 
     test('IT-PD-TC-B3: Cancel form', async () => {
         renderWithRouter();
-
         fireEvent.click(screen.getByTestId('add-product-btn'));
         expect(await screen.findByTestId('product-name')).toBeInTheDocument();
 
         fireEvent.click(screen.getByText('Cancel'));
-        expect(screen.queryByTestId('product-name')).not.toBeInTheDocument(); // Modal closed
+        expect(screen.queryByTestId('product-name')).not.toBeInTheDocument();
         expect(axios.post).not.toHaveBeenCalled();
     });
 
@@ -88,14 +83,11 @@ describe('UserPage CRUD behavior', () => {
         const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => { });
 
         renderWithRouter();
-
         fireEvent.click(screen.getByTestId('add-product-btn'));
         fireEvent.click(screen.getByTestId('submit-btn'));
 
-        await waitFor(() => {
-            expect(alertSpy).toHaveBeenCalledWith('Failed to save product.');
-        });
-
+        const toast = await screen.findByTestId('success-message').catch(() => null);
+        expect(alertSpy).toHaveBeenCalledWith('Failed to save product.');
         alertSpy.mockRestore();
     });
 });

@@ -1,10 +1,10 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
-import { vi } from 'vitest';
 import axios from 'axios';
 import UserPage from '../components/UserPage';
 
-vi.mock('axios');
+// Mock axios
+jest.mock('axios');
 
 describe('UserPage Product Detail Behavior', () => {
 
@@ -19,7 +19,7 @@ describe('UserPage Product Detail Behavior', () => {
     };
 
     beforeEach(() => {
-        vi.clearAllMocks();
+        jest.clearAllMocks();
         localStorage.clear();
     });
 
@@ -27,7 +27,7 @@ describe('UserPage Product Detail Behavior', () => {
         const mockProducts = [
             { id: 1, title: 'Detail Product', description: 'Detail Desc', quantity: 15 }
         ];
-        vi.mocked(axios.get).mockResolvedValue({ data: mockProducts });
+        axios.get.mockResolvedValue({ data: mockProducts });
 
         renderPage();
 
@@ -43,7 +43,7 @@ describe('UserPage Product Detail Behavior', () => {
         const mockProducts = [
             { id: 1, title: 'Unchanged', description: 'Unchanged Desc', quantity: 10 }
         ];
-        vi.mocked(axios.get).mockResolvedValue({ data: mockProducts });
+        axios.get.mockResolvedValue({ data: mockProducts });
 
         renderPage();
 
