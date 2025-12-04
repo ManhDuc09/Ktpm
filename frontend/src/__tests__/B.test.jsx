@@ -1,22 +1,20 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { vi } from 'vitest';
-import LoginPage from './LoginPage';
-
-// Mock module authService
-vi.mock('../services/authService', () => ({
-  login: vi.fn(),
-  register: vi.fn(),
-}));
-
+import LoginPage from '../components/LoginPage';
 import * as authService from '../services/authService';
+
+// Mock module authService with Jest
+jest.mock('../services/authService', () => ({
+    login: jest.fn(),
+    register: jest.fn(),
+}));
 
 const mockedLogin = authService.login;
 const mockedRegister = authService.register;
 
 describe('Kiểm thử submit form và gọi API', () => {
     beforeEach(() => {
-        vi.clearAllMocks();
+        jest.clearAllMocks();
         localStorage.clear();
     });
 
@@ -31,7 +29,7 @@ describe('Kiểm thử submit form và gọi API', () => {
         fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
         fireEvent.change(passwordInput, { target: { value: '123456' } });
 
-        fireEvent.click(screen.getByTestId('login-submit'));
+        fireEvent.click(screen.getByTestId('login-button'));
 
         await waitFor(() => {
             expect(mockedLogin).toHaveBeenCalledWith({ email: 'test@example.com', password: '123456' });

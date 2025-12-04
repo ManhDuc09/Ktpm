@@ -2,7 +2,7 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { vi } from 'vitest';
 import axios from 'axios';
-import UserPage from './UserPage';
+import UserPage from '../components/UserPage';
 
 vi.mock('axios');
 

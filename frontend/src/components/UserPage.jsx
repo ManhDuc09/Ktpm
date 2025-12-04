@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import * as ProductService from "../services/ProductService"; // Use ProductService
 import "./UserPage.css";
+import axios from "axios";
+
 
 const UserPage = () => {
     const { id } = useParams();
@@ -153,7 +155,7 @@ const UserPage = () => {
                     <div className="modal-content p-3">
                         <h5>{isEdit ? "Edit Product" : "Add Product"}</h5>
                         <input type="text" name="title" placeholder="Title" value={modalData.title} onChange={handleChange} className="form-control my-2" data-testid="product-name" />
-                        <input type="text" name="description" placeholder="Description" value={modalData.description} onChange={handleChange} className="form-control my-2" data-testid="product-price" />
+                        <input type="text" name="description" placeholder="Description" value={modalData.description} onChange={handleChange} className="form-control my-2" data-testid="product-description" />
                         <input type="number" name="quantity" placeholder="Quantity" value={modalData.quantity} onChange={handleChange} className="form-control my-2" data-testid="product-quantity" />
                         <div className="d-flex justify-content-end mt-2">
                             <button className="btn btn-secondary me-2" onClick={closeModal}>Cancel</button>

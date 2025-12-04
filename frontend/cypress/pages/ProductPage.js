@@ -20,7 +20,7 @@ class ProductPage {
 
     fillProductForm(product) {
         cy.get('[data-testid="product-name"]').type(product.name);
-        cy.get('[data-testid="product-price"]').type(product.price);
+        cy.get('[data-testid="product-description"]').type(product.price);
         cy.get('[data-testid="product-quantity"]').type(product.quantity);
     }
 

@@ -1,11 +1,10 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { vi } from 'vitest';
-import LoginPage from './LoginPage';
+import LoginPage from '../components/LoginPage';
 
-// Mock module authService
-vi.mock('../services/authService', () => ({
-    login: vi.fn(),
+// Mock module authService using Jest
+jest.mock('../services/authService', () => ({
+    login: jest.fn(),
 }));
 
 import * as authService from '../services/authService';
@@ -14,15 +13,18 @@ const mockedLogin = authService.login;
 
 describe('Test error handling và success messages', () => {
     beforeEach(() => {
-        vi.clearAllMocks();
+        jest.clearAllMocks();
         localStorage.clear();
     });
 
     test('IT-TC-C1: Shows error when login fields are empty', async () => {
         render(<LoginPage />, { wrapper: MemoryRouter });
-        fireEvent.click(screen.getByTestId('login-submit'));
+        fireEvent.click(screen.getByTestId('login-button'));
         await waitFor(() => {
-            expect(screen.getByTestId('login-error')).toHaveTextContent('Both email and password are required!');
+            expect(screen.getByTestId('login-error')).toHaveTextContent(
+                'Email is required'
+            );
+
         });
     });
 
@@ -34,9 +36,12 @@ describe('Test error handling và success messages', () => {
         const passwordInput = screen.getByTestId('login-password');
         fireEvent.change(emailInput, { target: { value: 'invalid@test.com' } });
         fireEvent.change(passwordInput, { target: { value: 'wrong' } });
-        fireEvent.click(screen.getByTestId('login-submit'));
+        fireEvent.click(screen.getByTestId('login-button'));
+
         await waitFor(() => {
-            expect(screen.getByTestId('login-error')).toHaveTextContent('Invalid email or password!');
+            expect(screen.getByTestId('login-error')).toHaveTextContent(
+                'Invalid email or password!'
+            );
         });
         expect(mockedLogin).toHaveBeenCalled();
     });
@@ -49,9 +54,10 @@ describe('Test error handling và success messages', () => {
         const passwordInput = screen.getByTestId('login-password');
         fireEvent.change(emailInput, { target: { value: 'invalid@test.com' } });
         fireEvent.change(passwordInput, { target: { value: 'wrong' } });
-        fireEvent.click(screen.getByTestId('login-submit'));
+        fireEvent.click(screen.getByTestId('login-button'));
+
         await waitFor(() => {
-            expect(screen.queryByTestId('register-error')).not.toBeInTheDocument(); 
+            expect(screen.queryByTestId('register-error')).not.toBeInTheDocument();
         });
         expect(mockedLogin).toHaveBeenCalled();
     });

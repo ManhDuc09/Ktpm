@@ -1,16 +1,16 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { vi } from 'vitest';
-import LoginPage from './LoginPage';
+import LoginPage from '../components/LoginPage';
 
-vi.mock('../services/authService', () => ({
-  login: vi.fn(),
-  register: vi.fn(),
+// Mock the authService module using Jest
+jest.mock('../services/authService', () => ({
+  login: jest.fn(),
+  register: jest.fn(),
 }));
 
 describe('Kiểm thử render và tương tác người dùng', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   test('IT-TC-A1: Hiển thị form đăng nhập và đăng ký ban đầu', () => {
@@ -18,7 +18,7 @@ describe('Kiểm thử render và tương tác người dùng', () => {
 
     expect(screen.getByTestId('login-email')).toBeInTheDocument();
     expect(screen.getByTestId('login-password')).toBeInTheDocument();
-    expect(screen.getByTestId('login-submit')).toBeInTheDocument();
+    expect(screen.getByTestId('login-button')).toBeInTheDocument();
 
     expect(screen.getByTestId('register-email')).toBeInTheDocument();
     expect(screen.getByTestId('register-password')).toBeInTheDocument();
