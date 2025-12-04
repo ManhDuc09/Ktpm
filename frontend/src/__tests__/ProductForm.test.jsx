@@ -1,6 +1,6 @@
-import { describe, it, vi, expect } from "vitest";
+
 import { render, screen, fireEvent } from "@testing-library/react";
-import ProductForm from "./ProductForm";
+import ProductForm from "../components/ProductForm";
 import "@testing-library/jest-dom";
 
 function fillForm(values) {
@@ -128,7 +128,7 @@ describe("ProductForm Component - Validation", () => {
   });
 
   it("TC9: Submit thành công khi dữ liệu hợp lệ", () => {
-    const handleSubmit = vi.fn();
+    const handleSubmit = jest.fn();
     render(<ProductForm onSubmit={handleSubmit} />);
     fillForm({
       "Tên sản phẩm": "Trà sữa",

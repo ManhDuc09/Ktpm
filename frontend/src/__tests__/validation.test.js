@@ -1,4 +1,4 @@
-import { validateUsername, validatePassword } from "./validation";
+import { validateUsername, validatePassword } from "../services/validation";
 describe("validateUsername()", () => {
   it("TC1: Username rỗng", () => {
     const r = validateUsername("");
