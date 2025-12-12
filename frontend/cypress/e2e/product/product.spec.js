@@ -8,7 +8,7 @@ describe('Product CRUD Tests', () => {
     });
 
     it('Create Product', () => {
-        const product = { name: 'POM Test', price: '100', quantity: '5' };
+        const product = { name: 'POM Test', description: 'Test', quantity: '5' };
         productPage.clickAddNew();
         productPage.fillProductForm(product);
         productPage.submitForm();
@@ -18,7 +18,7 @@ describe('Product CRUD Tests', () => {
 
     it('Update Product', () => {
         productPage.clickEdit('POM Test');
-        const updatedProduct = { name: 'POM Updated', price: '150', quantity: '10' };
+        const updatedProduct = { name: 'POM Updated', description: 'test', quantity: '10' };
         productPage.fillProductForm(updatedProduct);
         productPage.submitForm();
         productPage.getProductInList(updatedProduct.name).should('exist');

@@ -7,19 +7,18 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 export default defineConfig([
   globalIgnores(['dist']),
   {
+    // Application JS/JSX files
     files: ['**/*.{js,jsx}'],
     extends: [
       js.configs.recommended,
       reactHooks.configs['recommended-latest'],
       reactRefresh.configs.vite,
-      'plugin:cypress/recommended' // add Cypress recommended rules
     ],
     languageOptions: {
       ecmaVersion: 2020,
       globals: {
         ...globals.browser,
         ...globals.node,
-        ...globals.cypress  // add Cypress globals here
       },
       parserOptions: {
         ecmaVersion: 'latest',
@@ -27,9 +26,33 @@ export default defineConfig([
         sourceType: 'module',
       },
     },
-    plugins: ['cypress'], // add Cypress plugin
+    plugins: [],
     rules: {
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+    },
+  },
+  {
+    // Cypress test files
+    files: ['cypress/e2e/**/*.cy.{js,jsx}'],
+    extends: [
+      js.configs.recommended,
+      'plugin:cypress/recommended', // Cypress rules
+    ],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        ...globals.cypress, // Cypress globals
+      },
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+      },
+    },
+    plugins: ['cypress'],
+    rules: {
+      'no-unused-vars': 'off', // optional for test files
     },
   },
 ])
